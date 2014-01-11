@@ -5,6 +5,7 @@ public class Knight extends ChessPiece{
 	}
 	public boolean validMovement(int myXCoor, int myYCoor, int targXCoor, int targYCoor){
 		double slope = Math.abs(super.getSlope(myXCoor,myYCoor,targXCoor,targYCoor));
+		System.out.println("SLope" + slope);
 		if ((slope == 2.0 || slope == 0.5) && (Math.abs(myXCoor - targXCoor) == 1 || Math.abs(myYCoor - targYCoor) == 1))
 			return true;
 		else

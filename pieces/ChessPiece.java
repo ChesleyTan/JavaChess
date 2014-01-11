@@ -21,7 +21,7 @@ public abstract class ChessPiece{
 			return 10.0; // return of 10 signifies an undefined slope, or a vertical movement
 		}
 		else{
-			return (myYCoor - targYCoor) / (myXCoor - targXCoor);
+			return (myYCoor - targYCoor * 1.0) / (myXCoor - targXCoor);
 		}
 	}
 
