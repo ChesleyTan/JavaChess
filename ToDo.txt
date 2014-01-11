@@ -1,5 +1,11 @@
+implement pawn jump 2
 Finish implementation of castling: check rule
 implement pinning
-implement checking
+implement checking(using findChecks() method in ChessPiece classes)
 implement checkmate
+implement pawn promotion
+implement en passant
 
+Future-
+GUI
+Save and simulate games with txt file containing shorthand notation
