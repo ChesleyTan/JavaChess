@@ -1,0 +1,5 @@
+Finish implementation of castling: check rule
+implement pinning
+implement checking
+implement checkmate
+

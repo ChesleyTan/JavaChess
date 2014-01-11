@@ -9,6 +9,9 @@ public class Bishop extends ChessPiece{
 		else
 			return false;
 	}
+	public boolean validAttack(int myXCoor, int myYCoor, int targXCoor, int targYCoor){
+		return validMovement(myXCoor,myYCoor,targXCoor,targYCoor);
+	} 
 	public String toString(){
 		return COLOR + "-" + "Bi";
 	}

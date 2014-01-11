@@ -61,15 +61,21 @@ public class Board {
 			}
 			foo += "\n\n";
 		}
-		return foo;
+		return foo.substring(0,foo.length()-1); // Remove extra newline
     }
     public String toString(String color){
-    	if (color.equals("W"))
-    		return toString();
-		else if (color.equals("B"))
-			return getReverse();
-		else
-			return toString();
+    	String retStr = "============================================================\n";
+    	if (color.equals("W")){
+    		retStr += toString();
+    	}
+		else if (color.equals("B")){
+			retStr += getReverse();
+		}
+		else{
+			retStr += toString();
+		}
+		retStr += "============================================================\n";
+		return retStr;
     }
 
     // Prints _board in reverse when it is black's turn
@@ -88,8 +94,8 @@ public class Board {
 				foo += "(" + u + "," + i + ")" + "\t\b";
 			}
 			foo += "\n\n";
-	}
-		return foo;
+		}
+		return foo.substring(0,foo.length()-1); // Remove extra newline
 	}
 
 	public boolean move(int myXCoor, int myYCoor, int targXCoor, int targYCoor, String myColor){
@@ -100,21 +106,29 @@ public class Board {
 		//	return false;
 		//}
 		ChessPiece targPiece = _board[targYCoor][targXCoor];
-		if (targPiece != null && myPiece.getColor().equals(targPiece.getColor()))
+		if (targPiece != null && myPiece.getColor().equals(targPiece.getColor())){
+			System.out.println("\nInvalid move: Attacking own piece.\n");
 			return false;
-		if (myPiece.validMovement(myXCoor,myYCoor,targXCoor,targYCoor)){
-			if (targPiece == null){
+		}
+		if (targPiece == null){
+			if (myPiece.validMovement(myXCoor,myYCoor,targXCoor,targYCoor)){
 				_board[targYCoor][targXCoor] = myPiece;
 				_board[myYCoor][myXCoor] = null;
+				myPiece.toggleHasMoved();
 				System.out.println("\n\n\n\n\n\n\n\n\n\nSuccessful move: " + myPiece + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
 				return true;
 			}
 			else{
-				_board[targYCoor][targXCoor] = myPiece;
-				_board[myYCoor][myXCoor] = null;
-				System.out.println("\n\n\n\n\n\n\n\n\n\nSuccessful kill: " + myPiece + " (" + myXCoor + "," + myYCoor + ") kills " + targPiece + " (" + targXCoor + "," + targYCoor + ").\n");
-				return true;
+				System.out.println("\n\n\n\n\n\n\n\n\nInvalid move: " + "(" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
+				return false;
 			}
+		}
+		else if (myPiece.validAttack(myXCoor,myYCoor,targXCoor,targYCoor)){
+			_board[targYCoor][targXCoor] = myPiece;
+			_board[myYCoor][myXCoor] = null;
+			myPiece.toggleHasMoved();
+			System.out.println("\n\n\n\n\n\n\n\n\n\nSuccessful kill: " + myPiece + " (" + myXCoor + "," + myYCoor + ") takes " + targPiece + " (" + targXCoor + "," + targYCoor + ").\n");
+			return true;
 		}
 		System.out.println("\n\n\n\n\n\n\n\n\nInvalid move: " + "(" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
 		return false;

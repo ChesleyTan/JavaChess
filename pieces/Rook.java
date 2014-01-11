@@ -11,6 +11,9 @@ public class Rook extends ChessPiece{
 			return true;	
 		}
 	}
+	public boolean validAttack(int myXCoor, int myYCoor, int targXCoor, int targYCoor){
+		return validMovement(myXCoor,myYCoor,targXCoor,targYCoor);
+	} 
 	public String toString(){
 		return COLOR + "-" + "Rk";
 	}

@@ -1,6 +1,7 @@
 package pieces;
 public class King extends ChessPiece{
 	private boolean isChecked;
+	public boolean isChecked(){ return isChecked; }
 	public King(String color){
 		super("KING", color, 1);
 	}
@@ -11,6 +12,9 @@ public class King extends ChessPiece{
 		else
 			return false;
 	}
+	public boolean validAttack(int myXCoor, int myYCoor, int targXCoor, int targYCoor){
+		return validMovement(myXCoor,myYCoor,targXCoor,targYCoor);
+	} 
 	public boolean getIsChecked(){ return isChecked; }
 	public String toString(){
 		return COLOR + "-" + "K";

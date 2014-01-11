@@ -3,18 +3,50 @@ import java.util.Scanner;
 public class Chess{
 	private static Scanner scanInt = new Scanner(System.in);
 	private static String userColor = "W";
+	private static Board board = new Board();
+	public static boolean validCastle(int myXCoor, int myYCoor, int targXCoor, int targYCoor){
+		if (myYCoor != targYCoor)
+			return false;
+		else{
+			if (myXCoor < targXCoor){
+				for (int i = myXCoor+1;i<targXCoor;i++){
+					if ( !(board.isEmpty(i,myYCoor)) ){
+						return false;
+					}
+				}
+				return true;
+			}
+			else if (myXCoor > targXCoor){
+				for (int i = myXCoor-1;i>targXCoor;i--){
+					if ( !(board.isEmpty(i,myYCoor)) ){
+						return false;
+					}
+				}
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+	}
+	public static void toggleUserColor(){
+		if (userColor.equals("W"))
+			userColor = "B";
+		else
+			userColor = "W";
+	}
 	public static void main(String[] args){
-		Board board = new Board();
-		System.out.println("Board:");
+		System.out.println("Board:\n");
 		System.out.println(board.toString(userColor));
 		ChessPiece chosen = null;
+		ChessPiece target;
 		int myXCoor,myYCoor,targXCoor,targYCoor;
 		while (true){
 			// Note: Coordinates are reversed because board stores coordinates in a format that resembles (Y,X) whereas computation and user input should be in format (X,Y)
 			do {
-			System.out.println("Choose your piece to move: Tell me it's x-coordinate.");
+			System.out.println("Choose your piece to move: Tell me its x-coordinate.");
 			myXCoor = InputValidator.nextValidInt(scanInt,0,8);
-			System.out.println("Now tell me it's y-coordinate.");
+			System.out.println("Now tell me its y-coordinate.");
 			myYCoor = InputValidator.nextValidInt(scanInt,0,8);
 			chosen = board.get(myXCoor,myYCoor);
 			System.out.println("The piece you chose is " + chosen);
@@ -22,16 +54,63 @@ public class Chess{
 				System.out.println("Please choose a valid piece.");
 			} while(chosen == null || !chosen.getColor().equals(userColor));
 			
-			System.out.println("Choose a place or piece to move to: Tell me it's x-coordinate.");
+			System.out.println("Choose a place or piece to move to: Tell me its x-coordinate.");
 			targXCoor = InputValidator.nextValidInt(scanInt,0,8);
-			System.out.println("Now tell me it's y-coordinate.");
+			System.out.println("Now tell me its y-coordinate.");
 			targYCoor = InputValidator.nextValidInt(scanInt,0,8);
-			// Note: Implement castling here: check if target piece is same color and a rook and other conditions
+			// Implementation for castling feature 
+			target = board.get(targXCoor,targYCoor);
+			if (target != null && chosen.getColor().equals(target.getColor())){
+				if (chosen.getType().equals("KING") && (target.getType().equals("ROOK"))){
+					if (((King)chosen).isChecked()){
+						System.out.println("Invalid Castle: King is in check.");
+						continue;
+					}
+					else{
+						if (!chosen.hasMoved() && !target.hasMoved()){
+							if (validCastle(myXCoor,myYCoor,targXCoor,targYCoor)){
+								if (myXCoor == 4 && targXCoor == 7){
+									board.set(6,myYCoor,chosen);
+									board.set(5,myYCoor,target);
+									board.set(4,myYCoor,null);
+									board.set(7,myYCoor,null);
+									chosen.toggleHasMoved();
+									target.toggleHasMoved();
+									System.out.println("Successful castle: Kingside");
+									toggleUserColor();
+									System.out.println(board.toString(userColor));
+									continue;
+								}
+								else if (myXCoor == 4 && targXCoor == 0){
+									board.set(2,myYCoor,chosen);
+									board.set(3,myYCoor,target);
+									board.set(4,myYCoor,null);
+									board.set(0,myYCoor,null);
+									chosen.toggleHasMoved();
+									target.toggleHasMoved();
+									System.out.println("Successful castle: Queenside");
+									toggleUserColor();
+									System.out.println(board.toString(userColor));
+									continue;
+								}
+								else{
+									System.out.println("Invalid Castle: Incorrect positioning.");
+								}
+							} 
+							else{
+								System.out.println("Invalid Castle: Path blocked.");
+								continue;
+							}
+						}
+						else{
+							System.out.println("Invalid Castle: Either King or Rook has moved before.");
+							continue;
+						}
+					}
+				}
+			}
 			if (board.move(myXCoor,myYCoor,targXCoor,targYCoor,userColor)){
-				if (userColor.equals("W"))
-					userColor = "B";
-				else
-					userColor = "W";
+				toggleUserColor();
 			}
 			System.out.println(board.toString(userColor));
 		}	
