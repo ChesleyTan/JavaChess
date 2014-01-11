@@ -10,6 +10,9 @@ public abstract class ChessPiece{
 		COLOR = color.toUpperCase();
 		RANGE = range;
 	}
+	public String getType(){ return TYPE; }
+	public String getColor(){ return COLOR; }
+	public int getRange(){ return RANGE; }
 	public boolean getIsPinned(){ return isPinned; }
 	public abstract boolean validMovement(int myXCoor, int myYCoor, int targXCoor, int targYCoor); // Checks to see if the piece can naturally make such a movement
 	public abstract String toString();
@@ -20,5 +23,6 @@ public abstract class ChessPiece{
 		else{
 			return (myYCoor - targYCoor) / (myXCoor - targXCoor);
 		}
-	} 
+	}
+
 }
