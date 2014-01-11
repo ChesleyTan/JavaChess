@@ -13,6 +13,6 @@ public class King extends ChessPiece{
 	}
 	public boolean getIsChecked(){ return isChecked; }
 	public String toString(){
-		return COLOR + "K";
+		return COLOR + "-" + "K";
 	}
 }

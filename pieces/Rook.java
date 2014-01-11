@@ -12,7 +12,7 @@ public class Rook extends ChessPiece{
 		}
 	}
 	public String toString(){
-		return COLOR + "Rk";
+		return COLOR + "-" + "Rk";
 	}
 
 }

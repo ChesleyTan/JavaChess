@@ -49,7 +49,7 @@ public class Board {
 	String foo = "";
 	for (ChessPiece i[] : _board) {
 	    for (ChessPiece piece : i) {
-		foo += piece + " ";
+		foo += piece + "\t\b";
 	    }
 	    foo += "\n\n";
 	}

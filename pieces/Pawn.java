@@ -16,6 +16,6 @@ public class Pawn extends ChessPiece{
 	}
 	public boolean getHasMoved(){ return hasMoved; }
 	public String toString(){
-		return COLOR + "K";
+		return COLOR + "-" + "K";
 	}
 }

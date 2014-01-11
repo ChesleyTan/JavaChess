@@ -10,7 +10,7 @@ public class Bishop extends ChessPiece{
 			return false;
 	}
 	public String toString(){
-		return COLOR + "Bi";
+		return COLOR + "-" + "Bi";
 	}
 
 }

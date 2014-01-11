@@ -11,7 +11,7 @@ public class Queen extends ChessPiece{
 			return false;
 	}
 	public String toString(){
-		return COLOR + "Q";
+		return COLOR + "-" + "Q";
 	}
 
 }
