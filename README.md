@@ -1,6 +1,6 @@
 JavaChess
 =========
 
-Two Player Chess in Java
-Fall AP CS Final Project
-by Chesley Tan and Christopher Kim
+Two Player Chess in <b>Java</b><br>
+Fall 2013 AP CS Final Project<br>
+by <b>Chesley Tan and Christopher Kim</b><br>
