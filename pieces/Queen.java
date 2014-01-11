@@ -1,9 +1,14 @@
 package pieces;
 public class Queen extends ChessPiece{
 	public Queen(String color){
-		COLOR = color.toUpperCase();
-		RANGE = -1;
-		TYPE="QUEEN";	
+		super("QUEEN", color, -1);
+	}
+	public boolean validMovement(int myXCoor, int myYCoor, int targXCoor, int targYCoor){
+		double slope = Math.abs(super.getSlope(myXCoor,myYCoor,targXCoor,targYCoor));
+		if (slope == 0.0 || slope == 1.0 || slope == 10.0)
+			return true;	
+		else
+			return false;
 	}
 	public String toString(){
 		return COLOR + "Q";
