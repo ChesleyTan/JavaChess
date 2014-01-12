@@ -1,4 +1,5 @@
-import pieces.*;
+package JavaChess;
+import JavaChess.pieces.*;
 
 public class Board {
     
@@ -111,7 +112,7 @@ public class Board {
 			return false;
 		}
 		if (targPiece == null){
-			if (myPiece.validMovement(myXCoor,myYCoor,targXCoor,targYCoor)){
+			if (myPiece.validMovement(myXCoor,myYCoor,targXCoor,targYCoor,this)){
 				_board[targYCoor][targXCoor] = myPiece;
 				_board[myYCoor][myXCoor] = null;
 				myPiece.toggleHasMoved();
@@ -123,7 +124,7 @@ public class Board {
 				return false;
 			}
 		}
-		else if (myPiece.validAttack(myXCoor,myYCoor,targXCoor,targYCoor)){
+		else if (myPiece.validAttack(myXCoor,myYCoor,targXCoor,targYCoor,this)){
 			_board[targYCoor][targXCoor] = myPiece;
 			_board[myYCoor][myXCoor] = null;
 			myPiece.toggleHasMoved();

@@ -1,4 +1,5 @@
-package pieces;
+package JavaChess.pieces;
+import JavaChess.Board;
 
 public abstract class ChessPiece{
 	protected final String TYPE;
@@ -17,8 +18,8 @@ public abstract class ChessPiece{
 	public boolean getIsPinned(){ return isPinned; }
 	public boolean hasMoved(){ return hasMoved; }
 	public void toggleHasMoved(){ hasMoved = true; } 
-	public abstract boolean validMovement(int myXCoor, int myYCoor, int targXCoor, int targYCoor); // Checks to see if the piece can naturally make such a movement
-	public abstract boolean validAttack(int myXCoor, int myYCoor, int targXCoor, int targYCoor); // Checks to see if the piece can naturally make such a movement
+	public abstract boolean validMovement(int myXCoor, int myYCoor, int targXCoor, int targYCoor, Board board); // Checks to see if the piece can naturally make such a movement
+	public abstract boolean validAttack(int myXCoor, int myYCoor, int targXCoor, int targYCoor, Board board); // Checks to see if the piece can naturally make such a movement
 	public abstract String toString();
 	public double getSlope(int myXCoor, int myYCoor, int targXCoor, int targYCoor){ // Helper method for the validMovement() method
 		if (myXCoor == targXCoor){

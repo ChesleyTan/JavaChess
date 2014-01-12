@@ -3,6 +3,7 @@
 	class InputValidator
 	includes more robust methods for validating input using Scanner
 =======================================================*/
+package JavaChess;
 import java.util.Scanner;
 public class InputValidator{
 	/*========================================================

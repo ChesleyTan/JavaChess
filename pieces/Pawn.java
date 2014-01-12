@@ -1,10 +1,11 @@
-package pieces;
+package JavaChess.pieces;
+import JavaChess.Board;
 public class Pawn extends ChessPiece{
 	private boolean hasMoved = false;
 	public Pawn(String color){
 		super("PAWN", color, 2);
 	}
-	public boolean validMovement(int myXCoor, int myYCoor, int targXCoor, int targYCoor){
+	public boolean validMovement(int myXCoor, int myYCoor, int targXCoor, int targYCoor, Board board){
 		int offset = -1; //Can only move forward
 		if (COLOR.equals("B"))
 			offset = 1;
@@ -14,7 +15,7 @@ public class Pawn extends ChessPiece{
 			return false;
 		}
 	}
-	public boolean validAttack(int myXCoor, int myYCoor, int targXCoor, int targYCoor){
+	public boolean validAttack(int myXCoor, int myYCoor, int targXCoor, int targYCoor, Board board){
 		int offset = -1; //Can only move forward
 		if (COLOR.equals("B"))
 			offset = 1;
