@@ -1,5 +1,4 @@
 package JavaChess;
-import JavaChess.Board;
 import JavaChess.pieces.*;
 import java.util.Scanner;
 public class Chess{
@@ -96,7 +95,7 @@ public class Chess{
 									board.set(7,myYCoor,null);
 									chosen.toggleHasMoved();
 									target.toggleHasMoved();
-									System.out.println("Successful castle: Kingside");
+									System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSuccessful castle: Kingside");
 									toggleUserColor();
 									System.out.println(board.toString(userColor));
 									continue;
@@ -108,7 +107,7 @@ public class Chess{
 									board.set(0,myYCoor,null);
 									chosen.toggleHasMoved();
 									target.toggleHasMoved();
-									System.out.println("Successful castle: Queenside");
+									System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSuccessful castle: Queenside");
 									toggleUserColor();
 									System.out.println(board.toString(userColor));
 									continue;

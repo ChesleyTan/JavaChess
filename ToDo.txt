@@ -4,7 +4,7 @@ Seperate pinning and checking into two cases:
 Pieces with infinite range --> can pin and can check, so check simultaneously
 Pieces with limited range --> can only check, so first check if distance to king is within range, and then permutate
 implement pinning
-implement checking(using findChecks() method in ChessPiece classes)
+implement checking(using findChecksAndPins() method in ChessPiece classes)
 implement checkmate
 implement pawn promotion
 implement en passant
