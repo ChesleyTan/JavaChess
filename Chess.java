@@ -5,8 +5,22 @@ public class Chess{
 	private static Scanner scanInt = new Scanner(System.in);
 	private static Scanner scanStr = new Scanner(System.in);
 	private static String player1, player2;
+	private static int blackKingXCoor = 4; // Position of king at start of game
+	private static int whiteKingXCoor = 4; // Position of king at start of game
+	private static int blackKingYCoor = 0;
+	private static int whiteKingYCoor = 7;
 	private static String userColor = "W";
 	private static Board board = new Board();
+	public static void updateKingCoor(String color, int xCoor, int yCoor){
+		if (color.equals("W")){
+			whiteKingXCoor = xCoor;
+			whiteKingYCoor = yCoor;
+		}
+		else if (color.equals("B")){
+			blackKingXCoor = xCoor;
+			blackKingYCoor = yCoor;
+		}
+	}
 	public static boolean validCastle(int myXCoor, int myYCoor, int targXCoor, int targYCoor){
 		if (myYCoor != targYCoor)
 			return false;
@@ -62,15 +76,15 @@ public class Chess{
 		while (true){
 			// Note: Coordinates are reversed because board stores coordinates in a format that resembles (Y,X) whereas computation and user input should be in format (X,Y)
 			do {
-			System.out.println((userColor.equals("W"))?player1 + "'s turn:":player2 + "'s turn:");	
-			System.out.println("Choose your piece to move: Tell me its x-coordinate.");
-			myXCoor = InputValidator.nextValidInt(scanInt,0,8);
-			System.out.println("Now tell me its y-coordinate.");
-			myYCoor = InputValidator.nextValidInt(scanInt,0,8);
-			chosen = board.get(myXCoor,myYCoor);
-			System.out.println("The piece you chose is " + chosen);
-			if (chosen == null || !chosen.getColor().equals(userColor))
-				System.out.println("Please choose a valid piece.");
+				System.out.println((userColor.equals("W"))?player1 + "'s turn:":player2 + "'s turn:");	
+				System.out.println("Choose your piece to move: Tell me its x-coordinate.");
+				myXCoor = InputValidator.nextValidInt(scanInt,0,8);
+				System.out.println("Now tell me its y-coordinate.");
+				myYCoor = InputValidator.nextValidInt(scanInt,0,8);
+				chosen = board.get(myXCoor,myYCoor);
+				System.out.println("The piece you chose is " + chosen);
+				if (chosen == null || !chosen.getColor().equals(userColor))
+					System.out.println("Please choose a valid piece.");
 			} while(chosen == null || !chosen.getColor().equals(userColor));
 			
 			System.out.println("Choose a place or piece to move to: Tell me its x-coordinate.");
@@ -93,6 +107,7 @@ public class Chess{
 									board.set(5,myYCoor,target);
 									board.set(4,myYCoor,null);
 									board.set(7,myYCoor,null);
+									updateKingCoor(chosen.getColor(), 6, myYCoor);
 									chosen.toggleHasMoved();
 									target.toggleHasMoved();
 									System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSuccessful castle: Kingside");
@@ -105,6 +120,7 @@ public class Chess{
 									board.set(3,myYCoor,target);
 									board.set(4,myYCoor,null);
 									board.set(0,myYCoor,null);
+									updateKingCoor(chosen.getColor(), 2, myYCoor);
 									chosen.toggleHasMoved();
 									target.toggleHasMoved();
 									System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSuccessful castle: Queenside");
@@ -129,6 +145,9 @@ public class Chess{
 				}
 			}
 			if (board.move(myXCoor,myYCoor,targXCoor,targYCoor,userColor)){
+				if (chosen.getType().equals("KING")){
+					updateKingCoor(chosen.getColor(), targXCoor, targYCoor);
+				}
 				toggleUserColor();
 			}
 			System.out.println(board.toString(userColor));
