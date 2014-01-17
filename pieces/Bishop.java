@@ -10,28 +10,32 @@ public class Bishop extends ChessPiece{
 				for (int i = myXCoor + 1,u = myYCoor + 1;i<targXCoor && u<targYCoor;u++,i++){
 					if (!board.isEmpty(i,u))
 						return false;
-				}	
+				}
+				return true;
 			}	
 			else if (myXCoor > targXCoor && myYCoor > targYCoor){
 				for (int i = myXCoor - 1,u = myYCoor - 1;i>targXCoor && u>targYCoor;u--,i--){
 					if (!board.isEmpty(i,u))
 						return false;
 				}	
+				return true;
 			}
 			else if (myXCoor < targXCoor && myYCoor > targYCoor){
 				for (int i = myXCoor + 1,u = myYCoor - 1;i<targXCoor && u>targYCoor;u--,i++){
 					if (!board.isEmpty(i,u))
 						return false;
 				}	
+				return true;
 			}	
 			else if (myXCoor > targXCoor && myYCoor < targYCoor){
 				for (int i = myXCoor - 1,u = myYCoor + 1;i>targXCoor && u<targYCoor;u++,i--){
 					if (!board.isEmpty(i,u))
 						return false;
 				}	
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 	public boolean validAttack(int myXCoor, int myYCoor, int targXCoor, int targYCoor, Board board){
 		return validMovement(myXCoor,myYCoor,targXCoor,targYCoor,board);
