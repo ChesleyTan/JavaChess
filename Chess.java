@@ -53,6 +53,7 @@ public class Chess{
 			userColor = "W";
 	}
 	public static void main(String[] args){
+		//cheat();
 		
 		// Set up player names
 		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
@@ -64,7 +65,7 @@ public class Chess{
 		if (player1.equals(player2))
 			System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPlease choose a different name.");
 		else
-			System.out.println("P1:" + player1 + "P2:" + player2);
+			System.out.println("P1:" + player1 + " P2:" + player2);
 		}while(player1.equals(player2));
 		
 		// Start Game
@@ -152,5 +153,14 @@ public class Chess{
 			}
 			System.out.println(board.toString(userColor));
 		}	
+	}
+	public static void cheat(){
+		for (int u = 0;u<8;u++){
+			for (int i = 0;i<8;i++){
+				board.set(i,u,null);
+			}
+		}
+		board.set(4,7,new King("W"));
+		board.set(7,7,new Rook("W"));
 	}
 }
