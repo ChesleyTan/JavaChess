@@ -2,7 +2,7 @@ package JavaChess.pieces;
 import JavaChess.Board;
 public class Queen extends ChessPiece{
 	public Queen(String color){
-		super("QUEEN", color, -1);
+		super("QUEEN", color, -1, new double[] {1d,-1d,0d,10d,-10d});
 	}
 	public boolean validMovement(int myXCoor, int myYCoor, int targXCoor, int targYCoor, Board board){
 		double slope = Math.abs(super.getSlope(myXCoor,myYCoor,targXCoor,targYCoor));

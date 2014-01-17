@@ -2,7 +2,7 @@ package JavaChess.pieces;
 import JavaChess.Board;
 public class Rook extends ChessPiece{
 	public Rook(String color){
-		super("ROOK", color, -1);
+		super("ROOK", color, -1, new double[] {0d,10d,-10d});
 	}
 	public boolean validMovement(int myXCoor, int myYCoor, int targXCoor, int targYCoor, Board board){
 		if ( !(myXCoor == targXCoor || myYCoor == targYCoor) ){
