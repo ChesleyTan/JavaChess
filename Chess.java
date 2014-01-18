@@ -46,6 +46,8 @@ public class Chess{
 	}
 	return false;
     }
+	//public boolean frozenKing() {
+	    
 		    
 		    
 	    
@@ -175,19 +177,29 @@ public class Chess{
 			}
 			board.set(targXCoor, targYCoor, chosen);
 			    
-			    			    			    
-			if (isChecked(userColor)) {
-	                     board.set(myXCoor,myYCoor,chosen);
-			     board.set(targXCoor, targYCoor, target);						     
+			if (chosen.getType().equals("KING")){    			    			    updateKingCoor(chosen.getColor(), targXCoor, targYCoor);
+				if (isChecked(userColor)) {
+					
+	                     		board.set(myXCoor,myYCoor,chosen);
+			     		board.set(targXCoor, targYCoor, target);						     
 			     System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInvalid Move: Your King is still in check.");
+				updateKingCoor(chosen.getColor(),  myXCoor, myYCoor);
+			
 			}
-			 else if (chosen.getType().equals("KING")){
+			 else {
 			      board.set(myXCoor,myYCoor,chosen);
 			      board.set(targXCoor, targYCoor, target);
 			      board.move(myXCoor,myYCoor,targXCoor,targYCoor,userColor);
 			      updateKingCoor(chosen.getColor(), targXCoor, targYCoor);
 			      toggleUserColor();
 			 }
+			}
+			else if (isChecked(userColor)) {
+				board.set(myXCoor,myYCoor,chosen);
+			     		board.set(targXCoor, targYCoor, target);						     
+			     System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInvalid Move: Your King is still in check.");
+			
+			}
 			 else {
 			    board.set(myXCoor,myYCoor,chosen);
 			    board.set(targXCoor, targYCoor, target);
