@@ -49,16 +49,19 @@ public class Chess{
     public boolean canMove(String color, int KingXCoor, int KingYCoor) {
 	for (int x = -1; x < 2; x ++) {
 	    for (int y = -1; y < 2; y ++) {
-		if (x != 0 && y != 0) {    
-		    if (!isChecked(color, KingXCoor + x, KingYCoor + y)) {
-			return false;
-		    }
+		if (x != 0 && y != 0) {
+			ChessPiece king = board.get(KingXCoor, KingYCoor);
+			if (king.validMovement(KingXCoor, KingYCoor, KingXCoor + x, KingYCoor + y, board)) {
+		    		if (!isChecked(color, KingXCoor + x, KingYCoor + y)) {
+		    			return false;
+		    		}
+			}
 		}
 	    }
 	}
 	return true;
     }
-                    
+                  
             
     public static boolean validCastle(int myXCoor, int myYCoor, int targXCoor, int targYCoor){
 	if (myYCoor != targYCoor)
