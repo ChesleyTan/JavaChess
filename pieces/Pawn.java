@@ -3,7 +3,7 @@ import JavaChess.Board;
 public class Pawn extends ChessPiece{
 	private boolean hasMoved = false;
 	public Pawn(String color){
-		super("PAWN", color, 2);
+		super("PAWN", color, 2, new double[] {1d,-1d});
 	}
 	public boolean validMovement(int myXCoor, int myYCoor, int targXCoor, int targYCoor, Board board){
 		int offset = 0;

@@ -4,7 +4,7 @@ public class King extends ChessPiece{
 	private boolean isChecked;
 	public boolean isChecked(){ return isChecked; }
 	public King(String color){
-		super("KING", color, 1);
+		super("KING", color, 1, new double[] {1d, -1d, 0d, 10d, -10d});
 	}
 	public boolean validMovement(int myXCoor, int myYCoor, int targXCoor, int targYCoor, Board board){
 		double slope = Math.abs(super.getSlope(myXCoor,myYCoor,targXCoor,targYCoor));
