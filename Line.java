@@ -1,3 +1,4 @@
+package JavaChess;
 // Class Line
 // Stores linear equations in slope-intercept form
 // and evaluates an intersection between two lines
@@ -9,11 +10,30 @@ public class Line{
 		_x = x;
 		_c = c;
 	}
+	public Line(){
+		_y = 0;
+		_x = 0;
+		_c = 0;
+	}
 	// Overloaded constructor that creates a line with a point and a slope
 	public Line(double slope, int xCoor, int yCoor){
-		_y = 1;
-		_x = slope;
-		_c = (-1 * slope * xCoor) + yCoor;
+		if (slope == Double.POSITIVE_INFINITY || slope == Double.NEGATIVE_INFINITY){
+			_y = 0;
+			_x = 1;
+			_c = -1 * xCoor;
+		}
+		else{
+			_y = 1;
+			_x = slope;
+			_c = (-1 * slope * xCoor) + yCoor;
+		}
+	}
+
+	// Overloaded constructor to create a vertical line
+	public Line(double xCoor){
+		_y = 0;
+		_x = 1;
+		_c = -1 * xCoor;
 	}
 	// Overloaded constructor that creates a line with two points
 	public Line(int x1, int y1, int x2, int y2){
@@ -26,11 +46,17 @@ public class Line{
 	public void setSlope(int x) { _x = x; }
 	public void setConstant(int c) { _c = c; }
 	public void convertToSlopeIntersect(){
-			if (_y != 1){
+		if (_y == 0){
+			if (_x != 1){
+				_c /= _x;
+				_x = 1;
+			}
+		}
+		else if (_y != 1){
 				_x /= _y; 
 				_c /= _y; 
 				_y = 1; 
-			}
+		}
 	}
 	public double[] getIntersection(Line l){
 		double [] retArr = new double[2];
@@ -40,6 +66,17 @@ public class Line{
 		else{
 			convertToSlopeIntersect();
 			l.convertToSlopeIntersect();
+
+			if (l.getYCoefficient() == 0){
+				retArr[0] = -1 * l.getConstant();
+				retArr[1] = _x * retArr[0] + _c;
+				return retArr;
+			}
+			else if (_y == 0){
+				retArr[0] = -1 * _c;
+				retArr[1] = l.getSlope() * retArr[0] + l.getConstant();
+				return retArr;
+			}
 			double xOfLHS = _x;
 			double cOfLHS = _c;
 			double xOfRHS = l.getSlope();
@@ -63,8 +100,9 @@ public class Line{
 		return printEquation();
 	}
 	//public static void main(String[] args){
-	//	Line l1 = new Line(1d,0.5d,-2d);
-	//	Line l2 = new Line(1d,1d,0d);
+	//	Line l1 = new Line(1d,1d,0d);
+	//	Line l2 = new Line(3d);
+
 	//	double[] ret;
 	//	ret = l1.getIntersection(l2);
 	//	if (ret != null){
@@ -73,7 +111,5 @@ public class Line{
 	//	else{
 	//		System.out.println(ret);
 	//	}
-	//	Line l1 = new Line(4, 7, 3, 5);
-	//	System.out.println(l1);
 	//}
 }

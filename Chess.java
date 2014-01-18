@@ -25,7 +25,11 @@ public class Chess{
 	}
 	// Method to check if a king is checked and set the isChecked boolean of the piece appropriately
 	// Also allows for virtualization of king at those coordinates
-	public static boolean isChecked(String color, int kingXCoor, int kingYCoor) {         
+	public static boolean isChecked(String color, int kingXCoor, int kingYCoor) {
+		// Remove old entries in checkedBy array of the king
+		if (board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING")){
+			((King)board.get(kingXCoor,kingYCoor)).clearCheckedBy();
+		}
 		for (int x = 0; x < 8; x++) {
 			for (int y = 0; y < 8; y++) {
 				ChessPiece piece = board.get(x,y);
@@ -33,6 +37,7 @@ public class Chess{
 					if (piece.validAttack(x, y,kingXCoor,kingYCoor, board)) {
 						if (board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING")){  // Allows for virtualization of move: if the supplied args for king's coordinates are not the true coords, this prevents an error
 							((King)board.get(kingXCoor,kingYCoor)).setIsChecked(true);
+							((King)board.get(kingXCoor,kingYCoor)).addCheckedBy(new int[] {x,y});
 						}
 						return true; 
 					}
@@ -40,7 +45,8 @@ public class Chess{
 			}
 		}
 		if (board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING")){
-			((King)board.get(kingXCoor,kingYCoor)).setIsChecked(false);	
+			((King)board.get(kingXCoor,kingYCoor)).setIsChecked(false);
+			((King)board.get(kingXCoor,kingYCoor)).clearCheckedBy();
 		}
 		return false;
 	}
@@ -62,6 +68,74 @@ public class Chess{
 					}
 				}
 			}
+		}
+		return false;
+	}
+	public static boolean canIntercept(String color, int kingXCoor, int kingYCoor){
+		King king = (King)board.get(kingXCoor,kingYCoor);
+		int numPiecesCheckedBy = king.getCheckedBy().size();
+		int x = 0;
+		int y = 0;
+		if (numPiecesCheckedBy == 1){
+			int[] checkerCoords = king.getCheckedBy().get(0);
+			String checkingPieceType = board.get(checkerCoords[0],checkerCoords[1]).getType();
+			if (checkingPieceType.equals("QUEEN") || checkingPieceType.equals("ROOK") || checkingPieceType.equals("BISHOP")){
+				Line checker = new Line(kingXCoor, kingYCoor, checkerCoords[0], checkerCoords[1]); // Create a line representing the line of sight of the checking piece
+				for (; x < 8; x++) {
+					for (y = 0; y < 8; y++) {
+						ChessPiece piece = board.get(x,y);
+						if (piece != null && piece.getColor().equals(color)) {
+							for (double slope:piece.getAttackSlopes()){
+								Line interceptor = new Line();
+								if (Math.abs(slope) == 10){
+									interceptor = new Line((double)x);
+								}
+								else{
+									interceptor = new Line(slope, x, y);
+								}
+								double[] intersection = interceptor.getIntersection(checker);
+								// Diagnostic info
+								System.out.println("Checker: " + checker);
+								System.out.println("Interceptor: " + interceptor);
+								System.out.println((intersection != null) ? "Intersect at (" + intersection[0] + "," + intersection[1] + ")" : "No intersection");
+								
+								int xOfIntersection, yOfIntersection;
+								if (intersection != null && (int)intersection[0] == intersection[1] && (int)intersection[1] == intersection[1]){
+									xOfIntersection = (int)intersection[0];
+									yOfIntersection = (int)intersection[1];
+									if (xOfIntersection >= 0 && xOfIntersection < 8 && yOfIntersection >= 0 && yOfIntersection < 8){
+										if ((board.get(xOfIntersection,yOfIntersection) == null && piece.validMovement(x, y, xOfIntersection,yOfIntersection, board)) || (board.get(xOfIntersection,yOfIntersection) != null && piece.validAttack(x, y, xOfIntersection, yOfIntersection, board))){
+											int xOfChecker = checkerCoords[0];
+											int yOfChecker = checkerCoords[1];
+											if (xOfIntersection >= xOfChecker && yOfIntersection <= yOfChecker && xOfIntersection <= kingXCoor && yOfIntersection >= kingYCoor){
+												return true;
+											}
+											else if (xOfIntersection <= xOfChecker && yOfIntersection <= yOfChecker && xOfIntersection >= kingXCoor && yOfIntersection >= kingYCoor){
+												return true;
+											}
+											else if (xOfIntersection >= xOfChecker && yOfIntersection >= yOfChecker && xOfIntersection <= kingXCoor && yOfIntersection <= kingYCoor){
+												return true;
+											}
+											else if (xOfIntersection <= xOfChecker && yOfIntersection >= yOfChecker && xOfIntersection >= kingXCoor && yOfIntersection <= kingYCoor){
+												return true;
+											}
+											else{
+												continue;
+											}	
+										}
+									}
+								}
+								else{
+									continue;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		else if (numPiecesCheckedBy == 2){
+			return false;	
 		}
 		return false;
 	}
@@ -286,12 +360,16 @@ public class Chess{
 			}
 		}
 		board.set(0,6,new Rook("B"));
+		board.set(4,0,new Rook("B"));
 		board.set(4,7,new King("W"));
 		board.set(3,0,new Queen("B"));
 		board.set(5,0,new Queen("B"));
 		board.set(6,4,new King("B"));
+		board.set(7,7,new Bishop("W"));
 		blackKingXCoor = 6;
 		blackKingYCoor = 4;
-		System.out.println(canMove("W",4,7));
+		isChecked("W",4,7);
+		System.out.println("White King can move:" + canMove("W",4,7));
+		System.out.println("White can intercept:" + canIntercept("W",4,7));
 	}
 }

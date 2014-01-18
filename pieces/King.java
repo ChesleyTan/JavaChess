@@ -1,7 +1,19 @@
 package JavaChess.pieces;
 import JavaChess.Board;
+import java.util.ArrayList;
 public class King extends ChessPiece{
 	private boolean isChecked = false;
+	private ArrayList<int[]> checkedBy = new ArrayList<int[]>();
+	public void addCheckedBy(int[] arr){
+		checkedBy.add(arr);
+	}
+	public ArrayList<int[]> getCheckedBy(){
+		return checkedBy;
+	}
+	public void clearCheckedBy(){
+		ArrayList<int[]> newArr = new ArrayList<int[]>();
+		checkedBy = newArr;
+	}
 	public boolean isChecked(){ return isChecked; }
 	public void setIsChecked(boolean checked) { isChecked = checked; }
 	public King(String color){
