@@ -10,8 +10,8 @@ public class Chess{
 	private static int blackKingYCoor = 0;
 	private static int whiteKingYCoor = 7;
 	private static String userColor = "W";
-    private static boolean isChecked = false;
-    private static int counter = 0;
+        //private static boolean isChecked = false;
+        //private static int counter = 0;
 	private static Board board = new Board();
 	public static void updateKingCoor(String color, int xCoor, int yCoor){
 		if (color.equals("W")){
@@ -23,32 +23,31 @@ public class Chess{
 			blackKingYCoor = yCoor;
 		}
 	}
-    public static boolean isChecked(String color) { 	
-	for (int x = 0; x < 8; x++) {
-	    for (int y = 0; y < 8; y++) {
-		ChessPiece piece = board.get(x,y);
-		if (piece != null && !piece.getColor().equals(color)) {
+        public static boolean isChecked(String color, int KingXCoor, int KingYCoor) { 	
+	    for (int x = 0; x < 8; x++) {
+		for (int y = 0; y < 8; y++) {
+		    ChessPiece piece = board.get(x,y);
+		    if (piece != null && !piece.getColor().equals(color)) {
 	            
-		    if ((piece.getColor()).equals("W")) {
+			if ((piece.getColor()).equals("W")) {
 			
-			if (piece.validAttack(x, y,blackKingXCoor,blackKingYCoor, board)) {
+			    if (piece.validAttack(x, y,KingXCoor,KingYCoor, board)) {
 			    return true; 
+			    }
 			}
-		    }
-		    else {
+			else {
 			
-			if (piece.validAttack(x, y,whiteKingXCoor,whiteKingYCoor, board)) {
-                            return true;
+			    if (piece.validAttack(x, y,KingXCoor,KingYCoor, board)) {
+				return true;
+			    }
 			}
 		    }
 		}
 	    }
-	}
 	return false;
-    }
+	}
 	//public boolean frozenKing() {
-	    
-		    
+	    	    
 		    
 	    
 	public static boolean validCastle(int myXCoor, int myYCoor, int targXCoor, int targYCoor){
@@ -176,36 +175,57 @@ public class Chess{
 				}
 			}
 			board.set(targXCoor, targYCoor, chosen);
-			    
-			if (chosen.getType().equals("KING")){    			    			    updateKingCoor(chosen.getColor(), targXCoor, targYCoor);
-				if (isChecked(userColor)) {
+			int Xking;
+			int Yking;
+			if (userColor.equals("W")) {
+			    Xking = whiteKingXCoor;
+			    Yking = whiteKingYCoor;
+			}
+			else {
+			    Xking = blackKingXCoor;
+			    Yking = blackKingYCoor;
+			}
+			if (chosen.getType().equals("KING")){
+    			    updateKingCoor(chosen.getColor(), targXCoor, targYCoor);
+			    if (userColor.equals("W")) {
+			    	Xking = whiteKingXCoor;
+			    	Yking = whiteKingYCoor;
+			    }
+			    else {
+			    	Xking = blackKingXCoor;
+			    	Yking = blackKingYCoor;
+			    }
+			
+			    if (isChecked(userColor, Xking, Yking)) {
 					
-	                     		board.set(myXCoor,myYCoor,chosen);
-			     		board.set(targXCoor, targYCoor, target);						     
-			     System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInvalid Move: Your King is still in check.");
-				updateKingCoor(chosen.getColor(),  myXCoor, myYCoor);
+	                       board.set(myXCoor,myYCoor,chosen);
+			       board.set(targXCoor, targYCoor, target);						     
+			       System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInvalid Move: Your King is still in check.");
+			       updateKingCoor(chosen.getColor(),  myXCoor, myYCoor);
 			
-			}
-			 else {
-			      board.set(myXCoor,myYCoor,chosen);
-			      board.set(targXCoor, targYCoor, target);
-			      board.move(myXCoor,myYCoor,targXCoor,targYCoor,userColor);
-			      updateKingCoor(chosen.getColor(), targXCoor, targYCoor);
-			      toggleUserColor();
-			 }
-			}
-			else if (isChecked(userColor)) {
+			    }
+			    else {
 				board.set(myXCoor,myYCoor,chosen);
-			     		board.set(targXCoor, targYCoor, target);						     
-			     System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInvalid Move: Your King is still in check.");
+				board.set(targXCoor, targYCoor, target);
+				if (board.move(myXCoor,myYCoor,targXCoor,targYCoor,userColor)) {
+				    updateKingCoor(chosen.getColor(), targXCoor, targYCoor);
+				    toggleUserColor();
+				}
+			    }
+			}
+			else if (isChecked(userColor, Xking, Yking)) {
+				board.set(myXCoor,myYCoor,chosen);
+			     	board.set(targXCoor, targYCoor, target);						     
+			        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInvalid Move: Your King is still in check.");
 			
 			}
-			 else {
+			else {
 			    board.set(myXCoor,myYCoor,chosen);
 			    board.set(targXCoor, targYCoor, target);
-			    board.move(myXCoor,myYCoor,targXCoor,targYCoor,userColor);
-			    toggleUserColor();
-			 }
+			    if (board.move(myXCoor,myYCoor,targXCoor,targYCoor,userColor)) {
+				toggleUserColor();
+			    }
+			}
 			    
 			System.out.println(board.toString(userColor));
 		}
