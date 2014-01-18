@@ -4,14 +4,12 @@ import java.util.Scanner;
 public class Chess{
 	private static Scanner scanInt = new Scanner(System.in);
 	private static Scanner scanStr = new Scanner(System.in);
-	private static String player1, player2;
+	private static String player1, player2, winner;
 	private static int blackKingXCoor = 4; // Position of king at start of game
 	private static int whiteKingXCoor = 4; // Position of king at start of game
 	private static int blackKingYCoor = 0;
 	private static int whiteKingYCoor = 7;
 	private static String userColor = "W";
-	//private static boolean isChecked = false;
-	//private static int counter = 0;
 	private static Board board = new Board();
 	public static void updateKingCoor(String color, int xCoor, int yCoor){
 		if (color.equals("W")){
@@ -26,6 +24,7 @@ public class Chess{
 	// Method to check if a king is checked and set the isChecked boolean of the piece appropriately
 	// Also allows for virtualization of king at those coordinates
 	public static boolean isChecked(String color, int kingXCoor, int kingYCoor) {
+		boolean isChecked = false;
 		// Remove old entries in checkedBy array of the king
 		if (board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING")){
 			((King)board.get(kingXCoor,kingYCoor)).clearCheckedBy();
@@ -39,16 +38,16 @@ public class Chess{
 							((King)board.get(kingXCoor,kingYCoor)).setIsChecked(true);
 							((King)board.get(kingXCoor,kingYCoor)).addCheckedBy(new int[] {x,y});
 						}
-						return true; 
+						isChecked = true;
 					}
 				}
 			}
 		}
-		if (board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING")){
+		if (isChecked == false && board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING")){
 			((King)board.get(kingXCoor,kingYCoor)).setIsChecked(false);
 			((King)board.get(kingXCoor,kingYCoor)).clearCheckedBy();
 		}
-		return false;
+		return isChecked;
 	}
 	
 	// Method to check if a king can move within its 3x3 surrounding
@@ -71,6 +70,8 @@ public class Chess{
 		}
 		return false;
 	}
+	
+	// Method to check if any of the user's pieces can block or kill an enemy piece that is checking the user's king
 	public static boolean canIntercept(String color, int kingXCoor, int kingYCoor){
 		King king = (King)board.get(kingXCoor,kingYCoor);
 		int numPiecesCheckedBy = king.getCheckedBy().size();
@@ -134,8 +135,34 @@ public class Chess{
 				}
 			}
 		}
-		else if (numPiecesCheckedBy == 2){
+		else if (numPiecesCheckedBy >= 2){  // If checked by 2 or more pieces simulataneusly, then the intersection of the lines occur at the king, so no interception can be made
 			return false;	
+		}
+		return false;
+	}
+	
+	public static boolean isCheckmate(){
+		int kingXCoor, kingYCoor;
+		if (userColor.equals("W")){
+			kingXCoor = whiteKingXCoor;
+			kingYCoor = whiteKingYCoor;
+		}
+		else{
+			kingXCoor = blackKingXCoor;
+			kingYCoor = blackKingXCoor;
+		}
+		if (isChecked(userColor, kingXCoor, kingYCoor)){
+			if (!canMove(userColor, kingXCoor, kingYCoor)){
+				if (!canIntercept(userColor, kingXCoor, kingYCoor)){
+					if (userColor.equals("W")){
+						winner = player1;
+					}
+					else{
+						winner = player2;
+					}
+					return true;
+				}
+			}
 		}
 		return false;
 	}
@@ -216,7 +243,7 @@ public class Chess{
 		ChessPiece chosen = null;
 		ChessPiece target;
 		int myXCoor,myYCoor,targXCoor,targYCoor;
-		while (true){
+		while (!isCheckmate()){
 			
 			// Checks if user's king is in check before moving
 			boolean kingPreviouslyChecked = false;
@@ -349,6 +376,7 @@ public class Chess{
 
 			System.out.println(board.toString(userColor)); // Print out board
 		}
+		System.out.println("CHECKMATE, " + winner.toUpperCase() + " WINS!");
 	}
 	// Method for setting up the board in a special arrangement
 	// IMPORTANT NOTE: When starting the king is a position that is not its standard position on the chessboard,
@@ -365,6 +393,7 @@ public class Chess{
 		board.set(3,0,new Queen("B"));
 		board.set(5,0,new Queen("B"));
 		board.set(6,4,new King("B"));
+		board.set(6,5,new Bishop("B"));
 		board.set(7,7,new Bishop("W"));
 		blackKingXCoor = 6;
 		blackKingYCoor = 4;
