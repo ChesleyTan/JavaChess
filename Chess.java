@@ -23,35 +23,47 @@ public class Chess{
 			blackKingYCoor = yCoor;
 		}
 	}
+	// Method to check if a king is checked and set the isChecked boolean of the piece appropriately
+	// Also allows for virtualization of king at those coordinates
 	public static boolean isChecked(String color, int kingXCoor, int kingYCoor) {         
 		for (int x = 0; x < 8; x++) {
 			for (int y = 0; y < 8; y++) {
 				ChessPiece piece = board.get(x,y);
 				if (piece != null && !piece.getColor().equals(color)) {
 					if (piece.validAttack(x, y,kingXCoor,kingYCoor, board)) {
-						((King)board.get(kingXCoor,kingYCoor)).setIsChecked(true);	
+						if (board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING")){  // Allows for virtualization of move: if the supplied args for king's coordinates are not the true coords, this prevents an error
+							((King)board.get(kingXCoor,kingYCoor)).setIsChecked(true);
+						}
 						return true; 
 					}
 				}
 			}
 		}
-		((King)board.get(kingXCoor,kingYCoor)).setIsChecked(false);	
+		if (board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING")){
+			((King)board.get(kingXCoor,kingYCoor)).setIsChecked(false);	
+		}
 		return false;
 	}
+	
+	// Method to check if a king can move within its 3x3 surrounding
 	public static boolean canMove(String color, int kingXCoor, int kingYCoor) {
+		ChessPiece king = board.get(kingXCoor, kingYCoor);
 		for (int x = -1; x < 2; x ++) {
 			for (int y = -1; y < 2; y ++) {
-				if (x != 0 && y != 0) {
-					ChessPiece king = board.get(kingXCoor, kingYCoor);
-					if (king.validMovement(kingXCoor, kingYCoor, kingXCoor + x, kingYCoor + y, board)) {
-						if (!isChecked(color, kingXCoor + x, kingYCoor + y)) {
-							return false;
+				if (x != 0 && y != 0) { // Skips case when the offsets are both 0, hence the piece is moving to itself
+					int newXCoor = kingXCoor + x;
+					int newYCoor = kingYCoor + y;
+					if (newXCoor >= 0 && newXCoor < 8 && newYCoor >= 0 && newYCoor < 8){ // Prevents index out of bounds
+						if (king.validMovement(kingXCoor, kingYCoor, newXCoor, newYCoor, board)) {
+							if (!isChecked(color, newXCoor, newYCoor)) { // If there exists a position where the king is not in check, then return true
+								return true;
+							}
 						}
 					}
 				}
 			}
 		}
-		return true;
+		return false;
 	}
 
 
@@ -273,10 +285,13 @@ public class Chess{
 				board.set(i,u,null);
 			}
 		}
+		board.set(0,6,new Rook("B"));
 		board.set(4,7,new King("W"));
-		board.set(3,0,new King("B"));
-		blackKingXCoor = 3;
-		blackKingYCoor = 0;
-		board.set(4,0,new Queen("B"));
+		board.set(3,0,new Queen("B"));
+		board.set(5,0,new Queen("B"));
+		board.set(6,4,new King("B"));
+		blackKingXCoor = 6;
+		blackKingYCoor = 4;
+		System.out.println(canMove("W",4,7));
 	}
 }
