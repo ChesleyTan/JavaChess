@@ -14,80 +14,99 @@ public class Chess{
     //private static int counter = 0;
     private static Board board = new Board();
     public static void updateKingCoor(String color, int xCoor, int yCoor){
-	if (color.equals("W")){
-	    whiteKingXCoor = xCoor;
-	    whiteKingYCoor = yCoor;
-	}
-	else if (color.equals("B")){
-	    blackKingXCoor = xCoor;
-	    blackKingYCoor = yCoor;
-	}
-    }
-    public static boolean isChecked(String color, int KingXCoor, int KingYCoor) {         
-	for (int x = 0; x < 8; x++) {
-	    for (int y = 0; y < 8; y++) {
-		ChessPiece piece = board.get(x,y);
-		if (piece != null && !piece.getColor().equals(color)) {
-                    
-		    if ((piece.getColor()).equals("W")) {
-                        
-			if (piece.validAttack(x, y,KingXCoor,KingYCoor, board)) {
-                            return true; 
-			}
-		    }
-		    else {
-                        
-			if (piece.validAttack(x, y,KingXCoor,KingYCoor, board)) {
-			    return true;
-			}
-		    }
+		if (color.equals("W")){
+			whiteKingXCoor = xCoor;
+			whiteKingYCoor = yCoor;
 		}
-	    }
-	}
-        return false;
+		else if (color.equals("B")){
+			blackKingXCoor = xCoor;
+			blackKingYCoor = yCoor;
+		}
     }
-    public boolean canMove(String color, int KingXCoor, int KingYCoor) {
-	for (int x = -1; x < 2; x ++) {
-	    for (int y = -1; y < 2; y ++) {
-		if (x != 0 && y != 0) {
-			ChessPiece king = board.get(KingXCoor, KingYCoor);
-			if (king.validMovement(KingXCoor, KingYCoor, KingXCoor + x, KingYCoor + y, board)) {
-		    		if (!isChecked(color, KingXCoor + x, KingYCoor + y)) {
-		    			return false;
-		    		}
+    public static boolean isChecked(String color, int kingXCoor, int kingYCoor) {         
+		for (int x = 0; x < 8; x++) {
+			for (int y = 0; y < 8; y++) {
+				ChessPiece piece = board.get(x,y);
+				if (piece != null && !piece.getColor().equals(color)) {
+					if ((piece.getColor()).equals("W")) {
+						if (piece.validAttack(x, y,kingXCoor,kingYCoor, board)) {
+							return true; 
+						}
+					}
+					else {
+						if (piece.validAttack(x, y,kingXCoor,kingYCoor, board)) {
+							return true;
+						}
+					}
+				}
 			}
 		}
-	    }
-	}
-	return true;
+		return false;
+    }
+    public boolean canMove(String color, int kingXCoor, int kingYCoor) {
+		for (int x = -1; x < 2; x ++) {
+			for (int y = -1; y < 2; y ++) {
+				if (x != 0 && y != 0) {
+					ChessPiece king = board.get(kingXCoor, kingYCoor);
+					if (king.validMovement(kingXCoor, kingYCoor, kingXCoor + x, kingYCoor + y, board)) {
+						if (!isChecked(color, kingXCoor + x, kingYCoor + y)) {
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
     }
                   
             
     public static boolean validCastle(int myXCoor, int myYCoor, int targXCoor, int targYCoor){
-	if (myYCoor != targYCoor)
-	    return false;
-	else{
-	    if (myXCoor < targXCoor){
-		for (int i = myXCoor+1;i<targXCoor;i++){
-		    if ( !(board.isEmpty(i,myYCoor)) ){
+		if (myYCoor != targYCoor)
 			return false;
-		    }
+		else{
+			if (myXCoor < targXCoor){
+				for (int i = myXCoor+1;i<targXCoor;i++){
+					if ( !(board.isEmpty(i,myYCoor)) ){
+						return false;
+					}
+				}
+				return true;
+			}
+			else if (myXCoor > targXCoor){
+				for (int i = myXCoor-1;i>targXCoor;i--){
+					if ( !(board.isEmpty(i,myYCoor)) ){
+						return false;
+					}
+				}
+				return true;
+			}
+			else{
+				return false;
+			}
 		}
-		return true;
-	    }
-	    else if (myXCoor > targXCoor){
-		for (int i = myXCoor-1;i>targXCoor;i--){
-		    if ( !(board.isEmpty(i,myYCoor)) ){
-			return false;
-		    }
-		}
-		return true;
-	    }
-	    else{
-		return false;
-	    }
-	}
     }
+	public boolean validMove(int myXCoor, int myYCoor, int targXCoor, int targYCoor, String myColor){
+		ChessPiece myPiece = board.get(myXCoor,myYCoor);
+		ChessPiece targPiece = board.get(targXCoor,targYCoor);
+		if (targPiece != null && myPiece.getColor().equals(targPiece.getColor())){
+			System.out.println("\nInvalid move: Attacking own piece.\n");
+			return false;
+		}
+		if (targPiece == null){
+			if (myPiece.validMovement(myXCoor,myYCoor,targXCoor,targYCoor,board)){
+				return true;
+			}
+			else{
+				System.out.println("\n\n\n\n\n\n\n\n\nInvalid move: " + "(" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
+				return false;
+			}
+		}
+		else if (myPiece.validAttack(myXCoor,myYCoor,targXCoor,targYCoor,board)){
+			return true;
+		}
+		System.out.println("\n\n\n\n\n\n\n\n\nInvalid move: " + "(" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
+		return false;
+	}
     public static void toggleUserColor(){
 	if (userColor.equals("W"))
 	    userColor = "B";
@@ -249,13 +268,13 @@ public class Chess{
 	    System.out.println(board.toString(userColor));
 	}
     }
-    public static void cheat(){
-	for (int u = 0;u<8;u++){
-	    for (int i = 0;i<8;i++){
-		board.set(i,u,null);
-	    }
-	}
-	board.set(4,7,new King("W"));
-	board.set(7,7,new Rook("W"));
-    }
+    //public static void cheat(){
+	//for (int u = 0;u<8;u++){
+	//    for (int i = 0;i<8;i++){
+	//	board.set(i,u,null);
+	//    }
+	//}
+	//board.set(4,7,new King("W"));
+	//board.set(7,7,new Rook("W"));
+    //}
 }
