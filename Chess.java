@@ -174,20 +174,23 @@ public class Chess{
 					}
 				}
 			}
-			board.set(targXCoor, targYCoor, chosen);
-			int Xking;
+			board.set(targXCoor, targYCoor, chosen); // set the piece to the target's area without using move(), because we want
+								 // to check on whether or not the King remains in check
+			int Xking; //I have these variables to make it easier for me, when the user color is white I want the White King's coors
 			int Yking;
 			if (userColor.equals("W")) {
 			    Xking = whiteKingXCoor;
 			    Yking = whiteKingYCoor;
 			}
-			else {
+			else { // if the userColor is black, I want the black coors
 			    Xking = blackKingXCoor;
 			    Yking = blackKingYCoor;
 			}
 			if (chosen.getType().equals("KING")){
-    			    updateKingCoor(chosen.getColor(), targXCoor, targYCoor);
-			    if (userColor.equals("W")) {
+    			    updateKingCoor(chosen.getColor(), targXCoor, targYCoor); /* need to update it first because if the chosen piece is a king, then
+    			    							    I wouldn't want to ask for check on the same exact coords, but I would want to ask for check on 
+    			    							    the new coords of the king*/
+			    if (userColor.equals("W")) { // Have to run this again to update my xcoor ycoor values, could have been more efficient my bad 
 			    	Xking = whiteKingXCoor;
 			    	Yking = whiteKingYCoor;
 			    }
@@ -196,34 +199,37 @@ public class Chess{
 			    	Yking = blackKingYCoor;
 			    }
 			
-			    if (isChecked(userColor, Xking, Yking)) {
+			    if (isChecked(userColor, Xking, Yking)) { // Checks if the UserColor's King is in Check after the piece is moved from line 177
 					
-	                       board.set(myXCoor,myYCoor,chosen);
-			       board.set(targXCoor, targYCoor, target);						     
+	                       board.set(myXCoor,myYCoor,chosen); // we have to move back the chosen piece to the initial position
+			       board.set(targXCoor, targYCoor, target); // we have to bring back the targeted piece in case the targeted piece was killed off by the chosen piece						     
 			       System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInvalid Move: Your King is still in check.");
-			       updateKingCoor(chosen.getColor(),  myXCoor, myYCoor);
+			       updateKingCoor(chosen.getColor(),  myXCoor, myYCoor); //since it was a check even after the king moved, we have to move the King back and
+			       							// update the coords of the King to its original coords
+			       // no toggleuserColor() here, so still this guy's turn
 			
 			    }
 			    else {
-				board.set(myXCoor,myYCoor,chosen);
-				board.set(targXCoor, targYCoor, target);
-				if (board.move(myXCoor,myYCoor,targXCoor,targYCoor,userColor)) {
-				    updateKingCoor(chosen.getColor(), targXCoor, targYCoor);
-				    toggleUserColor();
+				board.set(myXCoor,myYCoor,chosen); // it's not checked, so set the board back to how it was so I can use move()				
+				board.set(targXCoor, targYCoor, target);// placing the target back to its original position
+				if (board.move(myXCoor,myYCoor,targXCoor,targYCoor,userColor)) { // now we can use the move() method
+				    updateKingCoor(chosen.getColor(), targXCoor, targYCoor); //update the King's new coordinates
+				    toggleUserColor(); // next person's turn
 				}
 			    }
 			}
-			else if (isChecked(userColor, Xking, Yking)) {
-				board.set(myXCoor,myYCoor,chosen);
+			else if (isChecked(userColor, Xking, Yking)) { // So now that we know that the chosen piece was not a king, we can simply
+								// check on whether or not the king is in check after the move imposed by line 177
+				board.set(myXCoor,myYCoor,chosen); //set the board back to original if it's in check
 			     	board.set(targXCoor, targYCoor, target);						     
-			        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInvalid Move: Your King is still in check.");
-			
+			        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInvalid Move: Your King is still in check.");
+				// no toggleUserColor() here, so that means still this guy's turn
 			}
-			else {
-			    board.set(myXCoor,myYCoor,chosen);
+			else { 
+			    board.set(myXCoor,myYCoor,chosen); // it's not a check! set the board back to its original so I can use move() on it
 			    board.set(targXCoor, targYCoor, target);
-			    if (board.move(myXCoor,myYCoor,targXCoor,targYCoor,userColor)) {
-				toggleUserColor();
+			    if (board.move(myXCoor,myYCoor,targXCoor,targYCoor,userColor)) { // check if it's a valid movement
+				toggleUserColor(); // if it's a valid movement, it becomes the next person's turn
 			    }
 			}
 			    
