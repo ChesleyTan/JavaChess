@@ -1,6 +1,7 @@
 package JavaChess;
 import JavaChess.pieces.*;
 
+// Note: Coordinates are reversed because board stores coordinates in a format that resembles (Y,X) whereas computation and user input should be in format (X,Y)
 public class Board {
     
     private ChessPiece[][] _board; 

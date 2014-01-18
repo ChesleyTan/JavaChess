@@ -1,8 +1,9 @@
 package JavaChess.pieces;
 import JavaChess.Board;
 public class King extends ChessPiece{
-	private boolean isChecked;
+	private boolean isChecked = false;
 	public boolean isChecked(){ return isChecked; }
+	public void setIsChecked(boolean checked) { isChecked = checked; }
 	public King(String color){
 		super("KING", color, 1, new double[] {1d, -1d, 0d, 10d, -10d});
 	}
@@ -16,7 +17,6 @@ public class King extends ChessPiece{
 	public boolean validAttack(int myXCoor, int myYCoor, int targXCoor, int targYCoor, Board board){
 		return validMovement(myXCoor,myYCoor,targXCoor,targYCoor,board);
 	} 
-	public boolean getIsChecked(){ return isChecked; }
 	public String toString(){
 		return COLOR + "-" + "K";
 	}
