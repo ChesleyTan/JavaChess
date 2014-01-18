@@ -23,27 +23,28 @@ public class Chess{
 			blackKingYCoor = yCoor;
 		}
 	}
-    public static boolean isChecked(String color) { 
-	boolean check = false;	
+    public static boolean isChecked(String color) { 	
 	for (int x = 0; x < 8; x++) {
 	    for (int y = 0; y < 8; y++) {
 		ChessPiece piece = board.get(x,y);
-		if (piece != null && piece.getColor().equals(color)) {
+		if (piece != null && !piece.getColor().equals(color)) {
 	            
-		    if (color.equals("W")) {
+		    if ((piece.getColor()).equals("W")) {
+			
 			if (piece.validAttack(x, y,blackKingXCoor,blackKingYCoor, board)) {
-			    check = true; 
+			    return true; 
 			}
 		    }
 		    else {
+			
 			if (piece.validAttack(x, y,whiteKingXCoor,whiteKingYCoor, board)) {
-                            check = true;
+                            return true;
 			}
 		    }
 		}
 	    }
 	}
-	return check;
+	return false;
     }
 		    
 		    
@@ -172,20 +173,30 @@ public class Chess{
 					}
 				}
 			}
-			if (board.move(myXCoor,myYCoor,targXCoor,targYCoor,userColor)){
+			board.set(targXCoor, targYCoor, chosen);
 			    
 			    			    			    
-			    if (isChecked(userColor)) {
-				board.move(targXCoor,targYCoor,myXCoor,myYCoor,userColor);
-				System.out.println("Invalid Move: Your King is still in check.");
-			    }
-			    else if (chosen.getType().equals("KING")){
-					updateKingCoor(chosen.getColor(), targXCoor, targYCoor);
-			    }
-			    toggleUserColor();
+			if (isChecked(userColor)) {
+	                     board.set(myXCoor,myYCoor,chosen);
+			     board.set(targXCoor, targYCoor, target);						     
+			     System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInvalid Move: Your King is still in check.");
 			}
+			 else if (chosen.getType().equals("KING")){
+			      board.set(myXCoor,myYCoor,chosen);
+			      board.set(targXCoor, targYCoor, target);
+			      board.move(myXCoor,myYCoor,targXCoor,targYCoor,userColor);
+			      updateKingCoor(chosen.getColor(), targXCoor, targYCoor);
+			      toggleUserColor();
+			 }
+			 else {
+			    board.set(myXCoor,myYCoor,chosen);
+			    board.set(targXCoor, targYCoor, target);
+			    board.move(myXCoor,myYCoor,targXCoor,targYCoor,userColor);
+			    toggleUserColor();
+			 }
+			    
 			System.out.println(board.toString(userColor));
-		}	
+		}
 	}
 	public static void cheat(){
 		for (int u = 0;u<8;u++){
