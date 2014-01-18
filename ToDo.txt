@@ -1,8 +1,6 @@
-Finish implementation of castling: check rule
-implement checking/pinning --> pinning will simply be a conditional after a move is attempted to see if the current user's king is in check after the move is made.  if this is the case, then undo move.
-implement checkmate
 implement pawn promotion
 implement en passant
+finish implementation of castling -- prevent castle if spaces between are checked
 
 Future-
 GUI
