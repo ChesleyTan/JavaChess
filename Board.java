@@ -134,6 +134,33 @@ public class Board {
 		System.out.println("\n\n\n\n\n\n\n\n\nInvalid move: " + "(" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
 		return false;
 	}
+	public boolean validMove(int myXCoor, int myYCoor, int targXCoor, int targYCoor, String myColor){
+		ChessPiece myPiece = _board[myYCoor][myXCoor];
+		// Preliminary checks already done in Chess.java
+		//if (myPiece.getColor() != myColor || myPiece == null){
+		//	System.out.println("That is not a valid piece for you to choose.");
+		//	return false;
+		//}
+		ChessPiece targPiece = _board[targYCoor][targXCoor];
+		if (targPiece != null && myPiece.getColor().equals(targPiece.getColor())){
+			System.out.println("\nInvalid move: Attacking own piece.\n");
+			return false;
+		}
+		if (targPiece == null){
+			if (myPiece.validMovement(myXCoor,myYCoor,targXCoor,targYCoor,this)){
+				return true;
+			}
+			else{
+				System.out.println("\n\n\n\n\n\n\n\n\nInvalid move: " + "(" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
+				return false;
+			}
+		}
+		else if (myPiece.validAttack(myXCoor,myYCoor,targXCoor,targYCoor,this)){
+			return true;
+		}
+		System.out.println("\n\n\n\n\n\n\n\n\nInvalid move: " + "(" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
+		return false;
+	}
 
 }
 
