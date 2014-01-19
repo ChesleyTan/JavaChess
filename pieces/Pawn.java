@@ -1,7 +1,6 @@
 package JavaChess.pieces;
 import JavaChess.Board;
 public class Pawn extends ChessPiece{
-	private boolean hasMoved = false;
 	public Pawn(String color){
 		super("PAWN", color, 2, new double[] {1d,-1d});
 	}
