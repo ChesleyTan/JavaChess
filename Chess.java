@@ -206,6 +206,38 @@ public class Chess{
 		return false;
 	}
 
+	public static void handlePawnPromotion(int myXCoor, int myYCoor){
+		int targetRank;
+		if (userColor.equals("W")){
+			targetRank = 0;
+		}
+		else{
+			targetRank = 7;
+		}
+		if (myYCoor == targetRank){
+			System.out.println(clearScreen + "What would you like to promote your pawn to?");
+			System.out.println("[1] Bishop\n[2] Rook\n[3] Knight\n[4] Queen\n");
+			System.out.print("Number of your selection: ");
+			int choice = InputValidator.nextValidInt(scanInt, 1, 4);
+			switch (choice){
+				case 1:
+					board.set(myXCoor, myYCoor, new Bishop(userColor));
+					break;
+				case 2:
+					board.set(myXCoor, myYCoor, new Rook(userColor));
+					break;
+				case 3:
+					board.set(myXCoor, myYCoor, new Knight(userColor));
+					break;
+				case 4:
+					board.set(myXCoor, myYCoor, new Queen(userColor));
+					break;
+				default:
+					break;
+
+			}
+		}
+	}
 
 	public static boolean validCastle(int myXCoor, int myYCoor, int targXCoor, int targYCoor){
 		if (myYCoor != targYCoor)
@@ -440,7 +472,7 @@ public class Chess{
 				}
 			}
 
-			// Checks if user's king is in check following moving
+			// Regular Move: Checks if king is in check after move
 			if (validMove(myXCoor, myYCoor, targXCoor, targYCoor, userColor)) {
 				System.out.println("hasMoved: " + chosen.hasMoved());
 				if (chosen.getType().equals("KING")){
@@ -450,6 +482,7 @@ public class Chess{
 				the new coords of the king*/
 				board.set(targXCoor,targYCoor,chosen); // Tentatively move the chosen piece to the target position
 				board.set(myXCoor, myYCoor, null); // Remove chosen piece from old position
+
 				if (kingCheckedAfterMove()) { // Check if the resulting position leads to a check on the user's king
 					board.set(myXCoor,myYCoor,board.set(targXCoor,targYCoor,target)); // Return pieces to original position by swapping 
 					if (chosen.getType().equals("KING")){
@@ -458,6 +491,9 @@ public class Chess{
 				}
 
 				else { // Case when the resulting position does NOT result in a check on the user's king
+					if (chosen.getType().equals("PAWN")){
+						handlePawnPromotion(targXCoor, targYCoor);	
+					}
 					chosen.toggleHasMoved();
 					if (target == null) { // Print feedback information to user
 						System.out.println(clearScreen + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
@@ -470,9 +506,9 @@ public class Chess{
 				}
 			}
 
-			System.out.println(board.toString(userColor)); // Print out board
+			System.out.println(board.toString(userColor)); // Print out board at the end of while loop
 		}
-		System.out.println("CHECKMATE, " + winner.toUpperCase() + " WINS!");
+		System.out.println("CHECKMATE, " + winner.toUpperCase() + " WINS!"); // Print out victory at termination of while loop
 	}
 	// Method for setting up the board in a special arrangement
 	// IMPORTANT NOTE: When starting the king is a position that is not its standard position on the chessboard,
@@ -485,9 +521,12 @@ public class Chess{
 		}
 		board.set(4,7,new King("W"));
 		board.set(4,0,new King("B"));
-		board.set(3,6,new Pawn("W"));
-		board.set(2,5,new Queen("B"));
-		board.set(3,1,new Pawn("B"));
+		board.set(0,1,new Pawn("W"));
+		board.set(1,1,new Pawn("W"));
+		board.set(2,1,new Pawn("W"));
+		board.set(0,6,new Pawn("B"));
+		board.set(1,6,new Pawn("B"));
+		board.set(2,6,new Pawn("B"));
 		isChecked("W",4,7);
 		System.out.println("White King can move:" + canMove("W",4,7));
 		System.out.println("White can intercept:" + canIntercept("W",4,7));

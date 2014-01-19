@@ -55,7 +55,7 @@ public class Board {
 					foo += "_____" + "\t\b";
 					continue;
 				}
-				foo += _board[i][u] + "\t\b";
+				foo += " " + _board[i][u] + "\t\b";
 			}
 			foo += "\n";
 			for (int u = 0;u<_board[0].length;u++) {
@@ -89,7 +89,7 @@ public class Board {
 					foo += "_____" + "\t\b";
 					continue;
 				}
-				foo += _board[i][u] + "\t\b";
+				foo += " " + _board[i][u] + "\t\b";
 			}
 			foo += "\n";
 			for (int u = _board[0].length-1;u>-1;u--) {

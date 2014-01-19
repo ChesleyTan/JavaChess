@@ -15,7 +15,7 @@ public class Knight extends ChessPiece{
 		return validMovement(myXCoor,myYCoor,targXCoor,targYCoor,board);
 	} 
 	public String toString(){
-		return COLOR + "-" + "Kn";
+		return COLOR + "-" + "N";
 	}
 
 }
