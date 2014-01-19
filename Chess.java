@@ -5,6 +5,9 @@ public class Chess{
 	private static Scanner scanInt = new Scanner(System.in);
 	private static Scanner scanStr = new Scanner(System.in);
 	private static String player1, player2, winner;
+	private static ChessPiece chosen = null;
+	private static ChessPiece target;
+	private static int myXCoor,myYCoor,targXCoor,targYCoor;
 	private static int blackKingXCoor = 4; // Position of king at start of game
 	private static int whiteKingXCoor = 4; // Position of king at start of game
 	private static int blackKingYCoor = 0;
@@ -13,7 +16,10 @@ public class Chess{
 	private static ChessPiece lastEnPassant = null; 
 	private static boolean kingPreviouslyChecked = false;
 	private static Board board = new Board();
-	private final static String clearScreen = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+	//private final static String clearScreen = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+	private final static String clearScreen = "\n";
+	private final static boolean debugMode = true;
+
 	public static void loopRound(){ // Tasks to be done when looping a round
 		System.out.println(board.toString(userColor));
 	}
@@ -50,7 +56,7 @@ public class Chess{
 	}
 	public static boolean kingCheckedAfterMove(){
 		boolean retBool;
-		if (retBool = isChecked(userColor, getXOfKing(userColor), getYOfKing(userColor))) { // Check if the resulting position leads to a check on the user's king
+		if (retBool = isChecked(userColor, getXOfKing(userColor), getYOfKing(userColor), false)) { // Check if the resulting position leads to a check on the user's king
 			if (kingPreviouslyChecked){ // Case when the user's king is checked in the turn before this one
 				System.out.println(clearScreen + "Invalid Move: Your King is still in check.");
 			}
@@ -61,11 +67,11 @@ public class Chess{
 		return retBool;
 	}
 	// Method to check if a king is checked and set the isChecked boolean of the piece appropriately
-	// Also allows for virtualization of king at those coordinates
-	public static boolean isChecked(String color, int kingXCoor, int kingYCoor) {
+	// Also allows for virtualization of the move by not setting the king's local variables isChecked and checkedBy[] 
+	public static boolean isChecked(String color, int kingXCoor, int kingYCoor, boolean virtualizeMove) {
 		boolean isChecked = false;
 		// Remove old entries in checkedBy array of the king
-		if (board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING")){
+		if (board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING") && !virtualizeMove){
 			((King)board.get(kingXCoor,kingYCoor)).clearCheckedBy();
 		}
 		for (int x = 0; x < 8; x++) {
@@ -73,7 +79,7 @@ public class Chess{
 				ChessPiece piece = board.get(x,y);
 				if (piece != null && !piece.getColor().equals(color)) {
 					if (piece.validAttack(x, y,kingXCoor,kingYCoor, board)) {
-						if (board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING")){  // Allows for virtualization of move: if the supplied args for king's coordinates are not the true coords, this prevents an error
+						if (board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING") && !virtualizeMove){  // Allows for virtualization of move: if the supplied args for king's coordinates are not the true coords, this prevents an error
 							((King)board.get(kingXCoor,kingYCoor)).setIsChecked(true);
 							((King)board.get(kingXCoor,kingYCoor)).addCheckedBy(new int[] {x,y});
 						}
@@ -82,7 +88,7 @@ public class Chess{
 				}
 			}
 		}
-		if (isChecked == false && board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING")){
+		if (isChecked == false && board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING") && !virtualizeMove){
 			((King)board.get(kingXCoor,kingYCoor)).setIsChecked(false);
 			((King)board.get(kingXCoor,kingYCoor)).clearCheckedBy();
 		}
@@ -91,23 +97,49 @@ public class Chess{
 
 	// Method to check if a king can move within its 3x3 surrounding
 	public static boolean canMove(String color, int kingXCoor, int kingYCoor) {
+		boolean retBool = false;
 		ChessPiece king = board.get(kingXCoor, kingYCoor);
 		for (int x = -1; x < 2; x ++) {
 			for (int y = -1; y < 2; y ++) {
-				if (x != 0 && y != 0) { // Skips case when the offsets are both 0, hence the piece is moving to itself
+				if (!(x == 0 && y == 0)) { // Skips case when the offsets are both 0, hence the piece is moving to itself
 					int newXCoor = kingXCoor + x;
 					int newYCoor = kingYCoor + y;
+
+					// Diagnostic
+					if (debugMode){
+						System.out.println("Checking if king can move to (" + newXCoor + "," + newYCoor + ")"); 
+					}
+
 					if (newXCoor >= 0 && newXCoor < 8 && newYCoor >= 0 && newYCoor < 8){ // Prevents index out of bounds
-						if (king.validMovement(kingXCoor, kingYCoor, newXCoor, newYCoor, board)) {
-							if (!isChecked(color, newXCoor, newYCoor)) { // If there exists a position where the king is not in check, then return true
-								return true;
+						target = board.get(newXCoor, newYCoor);
+						if (target == null && king.validMovement(kingXCoor, kingYCoor, newXCoor, newYCoor, board)) {
+							board.set(newXCoor, newYCoor, king);
+							board.set(kingXCoor, kingYCoor, null);
+							updateKingCoor(userColor, newXCoor, newYCoor);
+							if (!isChecked(color, newXCoor, newYCoor, true)) { // If there exists a position where the king is not in check, then return true
+								retBool = true;
 							}
+							board.set(newXCoor, newYCoor, null);
+							board.set(kingXCoor, kingYCoor, king);
+							updateKingCoor(userColor, kingXCoor, kingYCoor);
 						}
+						else if (target != null && king.validAttack(kingXCoor, kingYCoor, newXCoor, newYCoor, board)) {
+							board.set(newXCoor, newYCoor, king);
+							board.set(kingXCoor, kingYCoor, null);
+							updateKingCoor(userColor, newXCoor, newYCoor);
+							if (!isChecked(color, newXCoor, newYCoor, true)) { // If there exists a position where the king is not in check, then return true
+								retBool = true;
+							}
+							board.set(newXCoor, newYCoor, target);
+							board.set(kingXCoor, kingYCoor, king);
+							updateKingCoor(userColor, kingXCoor, kingYCoor);
+						}
+
 					}
 				}
 			}
 		}
-		return false;
+		return retBool;
 	}
 
 	// Method to check if any of the user's pieces can block or kill an enemy piece that is checking the user's king
@@ -134,17 +166,21 @@ public class Chess{
 									interceptor = new Line(slope, x, y);
 								}
 								double[] intersection = interceptor.getIntersection(checker);
-								// Diagnostic info
-								System.out.println("Checker: " + checker);
-								System.out.println("Interceptor: " + interceptor);
-								System.out.println((intersection != null) ? "Intersect at (" + intersection[0] + "," + intersection[1] + ")" : "No intersection");
 
+								// Diagnostic info
+								if (debugMode){
+									System.out.println("Checker: " + checker);
+									System.out.println("Scanning: " + piece);
+									System.out.println("Interceptor: " + interceptor);
+									System.out.println((intersection != null) ? "Intersect at (" + intersection[0] + "," + intersection[1] + ")" : "No intersection");
+								}
+								
 								int xOfIntersection, yOfIntersection;
-								if (intersection != null && (int)intersection[0] == intersection[1] && (int)intersection[1] == intersection[1]){
+								if (intersection != null && (int)intersection[0] == intersection[0] && (int)intersection[1] == intersection[1]){
 									xOfIntersection = (int)intersection[0];
 									yOfIntersection = (int)intersection[1];
 									if (xOfIntersection >= 0 && xOfIntersection < 8 && yOfIntersection >= 0 && yOfIntersection < 8){
-										if ((board.get(xOfIntersection,yOfIntersection) == null && piece.validMovement(x, y, xOfIntersection,yOfIntersection, board)) || (board.get(xOfIntersection,yOfIntersection) != null && piece.validAttack(x, y, xOfIntersection, yOfIntersection, board))){
+										if ((board.get(xOfIntersection,yOfIntersection) == null && piece.validMovement(x, y, xOfIntersection,yOfIntersection, board)) || (board.get(xOfIntersection,yOfIntersection) != null && !board.get(xOfIntersection,yOfIntersection).getColor().equals(userColor) && piece.validAttack(x, y, xOfIntersection, yOfIntersection, board))){
 											int xOfChecker = checkerCoords[0];
 											int yOfChecker = checkerCoords[1];
 											if (xOfIntersection >= xOfChecker && yOfIntersection <= yOfChecker && xOfIntersection <= kingXCoor && yOfIntersection >= kingYCoor){
@@ -173,6 +209,9 @@ public class Chess{
 					}
 				}
 			}
+			else{
+				System.out.println("CHECKING PIECE NOT INTERCEPTABLE" + checkingPieceType);
+			}
 		}
 		else if (numPiecesCheckedBy >= 2){  // If checked by 2 or more pieces simulataneusly, then the intersection of the lines occur at the king, so no interception can be made
 			return false;	
@@ -190,10 +229,10 @@ public class Chess{
 			kingXCoor = blackKingXCoor;
 			kingYCoor = blackKingYCoor;
 		}
-		if (isChecked(userColor, kingXCoor, kingYCoor)){
+		if (isChecked(userColor, kingXCoor, kingYCoor, false)){
 			if (!canMove(userColor, kingXCoor, kingYCoor)){
 				if (!canIntercept(userColor, kingXCoor, kingYCoor)){
-					if (userColor.equals("W")){
+					if (userColor.equals("B")){ // if checkmate is true, then other player wins
 						winner = player1;
 					}
 					else{
@@ -292,10 +331,145 @@ public class Chess{
 		else
 			userColor = "W";
 	}
-	public static void main(String[] args){
-		cheat();
+	
+	// Special move: Castling
+	public static boolean handleCastle(){
+		boolean shouldCallContinue = false;  // Returns whether the while loop should skip the current iteration
+		if (target != null && chosen.getColor().equals(target.getColor())){
+			if (chosen.getType().equals("KING") && (target.getType().equals("ROOK"))){
+				if (((King)chosen).isChecked()){
+					System.out.println("Invalid Castle: King is in check.");
+					loopRound();
+					shouldCallContinue = true;
+				}
+				else{
+					if (!chosen.hasMoved() && !target.hasMoved()){
+						if (validCastle(myXCoor,myYCoor,targXCoor,targYCoor)){
+							if (myXCoor == 4 && targXCoor == 7){
+								if (isChecked(userColor, 5, myYCoor, true) || isChecked(userColor, 6, myYCoor, true)){
+									System.out.println("Invalid Castle: King passes through square attacked by enemy piece");
+									loopRound();
+									shouldCallContinue = true;
+								}
+								board.set(6,myYCoor,chosen);
+								board.set(5,myYCoor,target);
+								board.set(4,myYCoor,null);
+								board.set(7,myYCoor,null);
+								updateKingCoor(chosen.getColor(), 6, myYCoor);
+								chosen.toggleHasMoved();
+								target.toggleHasMoved();
+								System.out.println(clearScreen + "Successful castle: Kingside");
+								advanceRound();
+								shouldCallContinue = true;
+							}
+							else if (myXCoor == 4 && targXCoor == 0){
+								if (isChecked(userColor, 3, myYCoor, true) || isChecked(userColor, 2, myYCoor, true)){
+									System.out.println("Invalid Castle: King passes through square attacked by enemy piece");
+									loopRound();
+									shouldCallContinue = true;
+								}
+								board.set(2,myYCoor,chosen);
+								board.set(3,myYCoor,target);
+								board.set(4,myYCoor,null);
+								board.set(0,myYCoor,null);
+								updateKingCoor(chosen.getColor(), 2, myYCoor);
+								chosen.toggleHasMoved();
+								target.toggleHasMoved();
+								System.out.println(clearScreen + "Successful castle: Queenside");
+								advanceRound();
+								shouldCallContinue = true;
+							}
+							else{
+								System.out.println("Invalid Castle: Incorrect positioning.");
+							}
+						} 
+						else{
+							System.out.println("Invalid Castle: Path blocked.");
+							loopRound();
+							shouldCallContinue = true;
+						}
+					}
+					else{
+						System.out.println("Invalid Castle: Either King or Rook has moved before.");
+						loopRound();
+						shouldCallContinue = true;
+					}
+				}
+			}
+		}
+		return shouldCallContinue;
+	}
 
-		// Set up player names
+	// Special move: En Passant
+	public static boolean handleEnPassant(){
+		boolean shouldCallContinue = false;	// Returns whether the while loop should skip the current iteration
+		if (target != null && chosen.getType().equals("PAWN") && target.getType().equals("PAWN") && !target.getColor().equals(userColor)){
+			if (myYCoor == targYCoor){
+				if (lastEnPassant == target){
+					if (userColor.equals("W")){
+						board.set(targXCoor, targYCoor, null);
+						board.set(myXCoor, myYCoor, null);
+						board.set(targXCoor, targYCoor - 1, chosen);
+					}
+					else{
+						board.set(targXCoor, targYCoor, null);
+						board.set(myXCoor, myYCoor, null);
+						board.set(targXCoor, targYCoor + 1, chosen);
+					}
+
+					if (kingCheckedAfterMove()) { // Check if the resulting position leads to a check on the user's king
+						board.set(myXCoor, myYCoor, chosen);
+						board.set(targXCoor, targYCoor, target);
+						if (userColor.equals("W")){
+							board.set(targXCoor, targYCoor - 1, null);
+						}
+						else{
+							board.set(targXCoor, targYCoor + 1, null);
+						}
+						loopRound();
+						shouldCallContinue = true;
+					}
+					else{
+						if (userColor.equals("W")){
+							System.out.println(clearScreen + "Successful En Passant: " + chosen + "(" + myXCoor + "," + myYCoor + ") takes " + target + "(" + targXCoor + "," + targYCoor + ").  Pawn lands at (" + targXCoor + "," + (targYCoor - 1) + ")." + "\n");
+						}
+						else{
+							System.out.println(clearScreen + "Successful En Passant: " + chosen + "(" + myXCoor + "," + myYCoor + ") takes " + target + "(" + targXCoor + "," + targYCoor + ").  Pawn lands at (" + targXCoor + "," + (targYCoor + 1) + ")." + "\n");
+						}
+						chosen.toggleHasMoved();
+						advanceRound();
+						shouldCallContinue = true;
+					}
+				}
+			}
+		}
+		return shouldCallContinue;
+	}
+
+	// Special move: Pawn advances two spaces
+	public static boolean handlePawnJump(){
+		boolean shouldCallContinue = false;	// Returns whether the while loop should skip the current iteration
+		if (target == null && chosen.getType().equals("PAWN") && !chosen.hasMoved() && Math.abs(myYCoor - targYCoor) == 2 && chosen.validMovement(myXCoor, myYCoor, targXCoor, targYCoor, board)){
+			board.set(targXCoor, targYCoor, chosen);
+			board.set(myXCoor, myYCoor, null);
+			if (kingCheckedAfterMove()){
+				board.set(myXCoor,myYCoor,board.set(targXCoor,targYCoor,target)); // Return pieces to original position by swapping 
+				loopRound();
+				shouldCallContinue = true;
+			}
+			else{
+				chosen.toggleHasMoved();
+				System.out.println(clearScreen + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
+				advanceRound();	
+				lastEnPassant = chosen;
+				shouldCallContinue = true;
+			}
+		}
+		return shouldCallContinue;
+	}
+
+	// Method to set up the game, prints to console
+	public static void setup(){
 		System.out.println(clearScreen);
 		do{
 			System.out.print("Player 1 Name: ");
@@ -307,174 +481,64 @@ public class Chess{
 			else
 				System.out.println("P1:" + player1 + " P2:" + player2);
 		}while(player1.equals(player2));
+	}
 
-		// Start Game
+	// Method to get user choice from console for piece to move and target to move to
+	public static void getUserChoice(){
+		chosen = null;
+		do {
+			System.out.println((userColor.equals("W"))?player1 + "'s turn:":player2 + "'s turn:");        
+			System.out.println("Choose your piece to move: Tell me its x-coordinate.");
+			myXCoor = InputValidator.nextValidInt(scanInt,0,7);
+			System.out.println("Now tell me its y-coordinate.");
+			myYCoor = InputValidator.nextValidInt(scanInt,0,7);
+			chosen = board.get(myXCoor,myYCoor);
+			System.out.println("The piece you chose is " + chosen);
+			if (chosen == null || !chosen.getColor().equals(userColor))
+				System.out.println("Please choose a valid piece.");
+		} while(chosen == null || !chosen.getColor().equals(userColor));
+
+		System.out.println("Choose a place or piece to move to: Tell me its x-coordinate.");
+		targXCoor = InputValidator.nextValidInt(scanInt,0,7);
+		System.out.println("Now tell me its y-coordinate.");
+		targYCoor = InputValidator.nextValidInt(scanInt,0,7);
+		target = board.get(targXCoor, targYCoor);
+	}
+	public static void main(String[] args){
+		cheat();
+
+		setup();
+
 		System.out.println(clearScreen + "Board:\n");
 		System.out.println(board.toString(userColor));
-		ChessPiece chosen = null;
-		ChessPiece target;
-		int myXCoor,myYCoor,targXCoor,targYCoor;
-		while (!isCheckmate()){
+		while (!isCheckmate()){ // Runs game until a player wins
 
 			// Checks if user's king is in check before moving
-			if (userColor.equals("W")){
-				if (isChecked(userColor, whiteKingXCoor, whiteKingYCoor)){ // Check whether the user's king is in check prior to user's turn
-					kingPreviouslyChecked = ((King)board.get(whiteKingXCoor,whiteKingYCoor)).isChecked(); // Keeps track of whether the user's king was checked before this turn
-					System.out.println("Your King is in check!");
-				} 
-			}
-			else{
-				if (isChecked(userColor, blackKingXCoor, blackKingYCoor)){ // Check whether the user's king is in check prior to user's turn
-					kingPreviouslyChecked = ((King)board.get(blackKingXCoor,blackKingYCoor)).isChecked(); // Keeps track of whether the user's king was checked before this turn
-					System.out.println("Your King is in check!");
-				} 
-			}
+			if (isChecked(userColor, getXOfKing(userColor), getYOfKing(userColor), false)){ // Check whether the user's king is in check prior to user's turn
+				System.out.println("Your King is in check!");
+			} 
+			kingPreviouslyChecked = ((King)board.get(getXOfKing(userColor),getYOfKing(userColor))).isChecked(); // Keeps track of whether the user's king was checked before this turn
 
-			do {
-				System.out.println((userColor.equals("W"))?player1 + "'s turn:":player2 + "'s turn:");        
-				System.out.println("Choose your piece to move: Tell me its x-coordinate.");
-				myXCoor = InputValidator.nextValidInt(scanInt,0,8);
-				System.out.println("Now tell me its y-coordinate.");
-				myYCoor = InputValidator.nextValidInt(scanInt,0,8);
-				chosen = board.get(myXCoor,myYCoor);
-				System.out.println("The piece you chose is " + chosen);
-				if (chosen == null || !chosen.getColor().equals(userColor))
-					System.out.println("Please choose a valid piece.");
-			} while(chosen == null || !chosen.getColor().equals(userColor));
-
-			System.out.println("Choose a place or piece to move to: Tell me its x-coordinate.");
-			targXCoor = InputValidator.nextValidInt(scanInt,0,8);
-			System.out.println("Now tell me its y-coordinate.");
-			targYCoor = InputValidator.nextValidInt(scanInt,0,8);
-
-			// Special move: Castling
-			target = board.get(targXCoor,targYCoor);
-			if (target != null && chosen.getColor().equals(target.getColor())){
-				if (chosen.getType().equals("KING") && (target.getType().equals("ROOK"))){
-					if (((King)chosen).isChecked()){
-						System.out.println("Invalid Castle: King is in check.");
-						loopRound();
-						continue;
-					}
-					else{
-						if (!chosen.hasMoved() && !target.hasMoved()){
-							if (validCastle(myXCoor,myYCoor,targXCoor,targYCoor)){
-								if (myXCoor == 4 && targXCoor == 7){
-									if (isChecked(userColor, 5, myYCoor) || isChecked(userColor, 6, myYCoor)){
-										System.out.println("Invalid Castle: King passes through square attacked by enemy piece");
-										loopRound();
-										continue;
-									}
-									board.set(6,myYCoor,chosen);
-									board.set(5,myYCoor,target);
-									board.set(4,myYCoor,null);
-									board.set(7,myYCoor,null);
-									updateKingCoor(chosen.getColor(), 6, myYCoor);
-									chosen.toggleHasMoved();
-									target.toggleHasMoved();
-									System.out.println(clearScreen + "Successful castle: Kingside");
-									advanceRound();
-									continue;
-								}
-								else if (myXCoor == 4 && targXCoor == 0){
-									if (isChecked(userColor, 3, myYCoor) || isChecked(userColor, 2, myYCoor)){
-										System.out.println("Invalid Castle: King passes through square attacked by enemy piece");
-										loopRound();
-										continue;
-									}
-									board.set(2,myYCoor,chosen);
-									board.set(3,myYCoor,target);
-									board.set(4,myYCoor,null);
-									board.set(0,myYCoor,null);
-									updateKingCoor(chosen.getColor(), 2, myYCoor);
-									chosen.toggleHasMoved();
-									target.toggleHasMoved();
-									System.out.println(clearScreen + "Successful castle: Queenside");
-									advanceRound();
-									continue;
-								}
-								else{
-									System.out.println("Invalid Castle: Incorrect positioning.");
-								}
-							} 
-							else{
-								System.out.println("Invalid Castle: Path blocked.");
-								loopRound();
-								continue;
-							}
-						}
-						else{
-							System.out.println("Invalid Castle: Either King or Rook has moved before.");
-							loopRound();
-							continue;
-						}
-					}
-				}
+			getUserChoice();
+			
+			// handleCastle() returns boolean signifying if iteration of the loop should be skipped
+			if (handleCastle()){
+				continue;
 			}
 
-			// Special move: En Passant
-			else if (target != null && chosen.getType().equals("PAWN") && target.getType().equals("PAWN") && !target.getColor().equals(userColor)){
-				if (myYCoor == targYCoor){
-					if (lastEnPassant == target){
-						if (userColor.equals("W")){
-							board.set(targXCoor, targYCoor, null);
-							board.set(myXCoor, myYCoor, null);
-							board.set(targXCoor, targYCoor - 1, chosen);
-						}
-						else{
-							board.set(targXCoor, targYCoor, null);
-							board.set(myXCoor, myYCoor, null);
-							board.set(targXCoor, targYCoor + 1, chosen);
-						}
-
-						if (kingCheckedAfterMove()) { // Check if the resulting position leads to a check on the user's king
-							board.set(myXCoor, myYCoor, chosen);
-							board.set(targXCoor, targYCoor, target);
-							if (userColor.equals("W")){
-								board.set(targXCoor, targYCoor - 1, null);
-							}
-							else{
-								board.set(targXCoor, targYCoor + 1, null);
-							}
-							loopRound();
-							continue;
-						}
-						else{
-							if (userColor.equals("W")){
-								System.out.println(clearScreen + "Successful En Passant: " + chosen + "(" + myXCoor + "," + myYCoor + ") takes " + target + "(" + targXCoor + "," + targYCoor + ").  Pawn lands at (" + targXCoor + "," + (targYCoor - 1) + ")." + "\n");
-							}
-							else{
-								System.out.println(clearScreen + "Successful En Passant: " + chosen + "(" + myXCoor + "," + myYCoor + ") takes " + target + "(" + targXCoor + "," + targYCoor + ").  Pawn lands at (" + targXCoor + "," + (targYCoor + 1) + ")." + "\n");
-							}
-							chosen.toggleHasMoved();
-							advanceRound();
-							continue;
-						}
-					}
-				}
+			// handleEnPassant() returns boolean signifying if iteration of the loop should be skipped
+			if (handleEnPassant()){
+				continue;
 			}
 
-			// Special move: Pawn advances two spaces
-			else if (target == null && chosen.getType().equals("PAWN") && !chosen.hasMoved() && Math.abs(myYCoor - targYCoor) == 2 && chosen.validMovement(myXCoor, myYCoor, targXCoor, targYCoor, board)){
-				board.set(targXCoor, targYCoor, chosen);
-				board.set(myXCoor, myYCoor, null);
-				if (kingCheckedAfterMove()){
-					board.set(myXCoor,myYCoor,board.set(targXCoor,targYCoor,target)); // Return pieces to original position by swapping 
-					loopRound();
-					continue;
-				}
-				else{
-					chosen.toggleHasMoved();
-					System.out.println(clearScreen + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
-					advanceRound();	
-					lastEnPassant = chosen;
-					continue;
-				}
+			// handlePawnJump() returns boolean signifying if iteration of the loop should be skipped
+			if (handlePawnJump()){
+				continue;
 			}
+
 
 			// Regular Move: Checks if king is in check after move
 			if (validMove(myXCoor, myYCoor, targXCoor, targYCoor, userColor)) {
-				System.out.println("hasMoved: " + chosen.hasMoved());
 				if (chosen.getType().equals("KING")){
 					updateKingCoor(chosen.getColor(), targXCoor, targYCoor); 
 				}/* need to update it first because if the chosen piece is a king, then
@@ -519,16 +583,54 @@ public class Chess{
 				board.set(i,u,null);
 			}
 		}
+
+		// Demonstrate checkmate
 		board.set(4,7,new King("W"));
-		board.set(4,0,new King("B"));
-		board.set(0,1,new Pawn("W"));
-		board.set(1,1,new Pawn("W"));
-		board.set(2,1,new Pawn("W"));
-		board.set(0,6,new Pawn("B"));
-		board.set(1,6,new Pawn("B"));
-		board.set(2,6,new Pawn("B"));
-		isChecked("W",4,7);
-		System.out.println("White King can move:" + canMove("W",4,7));
-		System.out.println("White can intercept:" + canIntercept("W",4,7));
+		board.set(7,7,new Rook("W"));
+		board.set(7,7,new Rook("W"));
+		board.set(1,0,new Rook("B"));
+		board.set(5,0,new Rook("B"));
+		board.set(7,1,new Pawn("B"));
+		board.set(0,1,new Pawn("B"));
+		board.set(7,6,new Pawn("W"));
+		board.set(6,6,new Pawn("W"));
+		board.set(5,6,new Pawn("W"));
+		board.set(1,6,new Pawn("W"));
+		board.set(0,5,new Pawn("W"));
+		board.set(5,5,new Knight("W"));
+		board.set(3,3,new Bishop("W"));
+		board.set(2,1,new Bishop("W"));
+		board.set(5,2,new King("B"));
+		board.set(6,3,new Queen("W"));
+		blackKingXCoor = 5;
+		blackKingYCoor = 2;
+
+		/* Demonstrate interception
+		board.set(4,7,new King("W"));
+		board.set(7,7,new Rook("W"));
+		board.set(7,7,new Rook("W"));
+		board.set(1,0,new Rook("B"));
+		board.set(5,0,new Rook("B"));
+		board.set(7,1,new Pawn("B"));
+		board.set(0,1,new Pawn("B"));
+		board.set(7,6,new Pawn("W"));
+		board.set(6,6,new Pawn("W"));
+		board.set(5,6,new Pawn("W"));
+		board.set(1,6,new Pawn("W"));
+		board.set(0,5,new Pawn("W"));
+		board.set(5,5,new Knight("W"));
+		board.set(3,3,new Bishop("W"));
+		board.set(2,1,new Bishop("W"));
+		board.set(5,2,new King("B"));
+		board.set(6,3,new Queen("W"));
+		blackKingXCoor = 5;
+		blackKingYCoor = 2;
+		*/
+	
+		// Some diagnostic stuff
+		//isChecked("B",5,2,false);
+		//System.out.println("Black King can move:" + canMove("B",5,2));
+		//System.out.println("Black can intercept:" + canIntercept("B",5,2));
+		//System.out.println("Black checked by: " + ((King)board.get(5,2)).getCheckedBy().get(0)[0] + ((King)board.get(5,2)).getCheckedBy().get(0)[1]); 
 	}
 }

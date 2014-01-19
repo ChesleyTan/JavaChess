@@ -45,7 +45,7 @@ public class Rook extends ChessPiece{
 		return validMovement(myXCoor,myYCoor,targXCoor,targYCoor,board);
 	} 
 	public String toString(){
-		return COLOR + "-" + "Rk";
+		return COLOR + "-" + "R";
 	}
 
 }
