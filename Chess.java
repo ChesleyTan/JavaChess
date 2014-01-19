@@ -381,6 +381,8 @@ public class Chess{
 							}
 							else{
 								System.out.println("Invalid Castle: Incorrect positioning.");
+								loopRound();
+								shouldCallContinue = true;
 							}
 						} 
 						else{
@@ -505,7 +507,7 @@ public class Chess{
 		target = board.get(targXCoor, targYCoor);
 	}
 	public static void main(String[] args){
-		cheat();
+		//cheat();
 
 		setup();
 
