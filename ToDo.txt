@@ -1,6 +1,4 @@
 implement pawn promotion
-implement en passant
-finish implementation of castling -- prevent castle if spaces between are checked
 
 Future-
 GUI
