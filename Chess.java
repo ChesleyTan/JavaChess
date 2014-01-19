@@ -10,7 +10,25 @@ public class Chess{
 	private static int blackKingYCoor = 0;
 	private static int whiteKingYCoor = 7;
 	private static String userColor = "W";
+	private static ChessPiece lastEnPassant = null; 
+	private static boolean kingPreviouslyChecked = false;
 	private static Board board = new Board();
+	public static int getXOfKing(String userColor){
+		if (userColor.equals("W")){
+			return whiteKingXCoor;
+		}
+		else{
+			return blackKingXCoor;
+		}
+	}
+	public static int getYOfKing(String userColor){
+		if (userColor.equals("W")){
+			return whiteKingYCoor;
+		}
+		else{
+			return blackKingYCoor;
+		}
+	}
 	public static void updateKingCoor(String color, int xCoor, int yCoor){
 		if (color.equals("W")){
 			whiteKingXCoor = xCoor;
@@ -20,6 +38,18 @@ public class Chess{
 			blackKingXCoor = xCoor;
 			blackKingYCoor = yCoor;
 		}
+	}
+	public static boolean kingCheckedAfterMove(){
+		boolean retBool;
+		if (retBool = isChecked(userColor, getXOfKing(userColor), getYOfKing(userColor))) { // Check if the resulting position leads to a check on the user's king
+			if (kingPreviouslyChecked){ // Case when the user's king is checked in the turn before this one
+				System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInvalid Move: Your King is still in check.");
+			}
+			else{ // Case when the user's move brings the user's king into check
+				System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInvalid Move: Your King is in check after this move.");
+			}
+		}
+		return retBool;
 	}
 	// Method to check if a king is checked and set the isChecked boolean of the piece appropriately
 	// Also allows for virtualization of king at those coordinates
@@ -149,7 +179,7 @@ public class Chess{
 		}
 		else{
 			kingXCoor = blackKingXCoor;
-			kingYCoor = blackKingXCoor;
+			kingYCoor = blackKingYCoor;
 		}
 		if (isChecked(userColor, kingXCoor, kingYCoor)){
 			if (!canMove(userColor, kingXCoor, kingYCoor)){
@@ -246,7 +276,6 @@ public class Chess{
 		while (!isCheckmate()){
 			
 			// Checks if user's king is in check before moving
-			boolean kingPreviouslyChecked = false;
 			if (userColor.equals("W")){
 				if (isChecked(userColor, whiteKingXCoor, whiteKingYCoor)){ // Check whether the user's king is in check prior to user's turn
 					kingPreviouslyChecked = ((King)board.get(whiteKingXCoor,whiteKingYCoor)).isChecked(); // Keeps track of whether the user's king was checked before this turn
@@ -276,7 +305,8 @@ public class Chess{
 			targXCoor = InputValidator.nextValidInt(scanInt,0,8);
 			System.out.println("Now tell me its y-coordinate.");
 			targYCoor = InputValidator.nextValidInt(scanInt,0,8);
-			// Implementation for castling feature 
+
+			// Special move: Castling
 			target = board.get(targXCoor,targYCoor);
 			if (target != null && chosen.getColor().equals(target.getColor())){
 				if (chosen.getType().equals("KING") && (target.getType().equals("ROOK"))){
@@ -288,6 +318,10 @@ public class Chess{
 						if (!chosen.hasMoved() && !target.hasMoved()){
 							if (validCastle(myXCoor,myYCoor,targXCoor,targYCoor)){
 								if (myXCoor == 4 && targXCoor == 7){
+									if (isChecked(userColor, 5, myYCoor) || isChecked(userColor, 6, myYCoor)){
+										System.out.println("Invalid Castle: King passes through square attacked by enemy piece");
+										continue;
+									}
 									board.set(6,myYCoor,chosen);
 									board.set(5,myYCoor,target);
 									board.set(4,myYCoor,null);
@@ -301,6 +335,10 @@ public class Chess{
 									continue;
 								}
 								else if (myXCoor == 4 && targXCoor == 0){
+									if (isChecked(userColor, 3, myYCoor) || isChecked(userColor, 2, myYCoor)){
+										System.out.println("Invalid Castle: King passes through square attacked by enemy piece");
+										continue;
+									}
 									board.set(2,myYCoor,chosen);
 									board.set(3,myYCoor,target);
 									board.set(4,myYCoor,null);
@@ -329,33 +367,79 @@ public class Chess{
 					}
 				}
 			}
+			
+			// Special move: En Passant
+			else if (target != null && chosen.getType().equals("PAWN") && target.getType().equals("PAWN") && !target.getColor().equals(userColor)){
+				if (myYCoor == targYCoor){
+					if (lastEnPassant == target){
+						if (userColor.equals("W")){
+							board.set(targXCoor, targYCoor, null);
+							board.set(myXCoor, myYCoor, null);
+							board.set(targXCoor, targYCoor - 1, chosen);
+						}
+						else{
+							board.set(targXCoor, targYCoor, null);
+							board.set(myXCoor, myYCoor, null);
+							board.set(targXCoor, targYCoor + 1, chosen);
+						}
+						
+						if (kingCheckedAfterMove()) { // Check if the resulting position leads to a check on the user's king
+							board.set(myXCoor, myYCoor, chosen);
+							board.set(targXCoor, targYCoor, target);
+							if (userColor.equals("W")){
+								board.set(targXCoor, targYCoor - 1, null);
+							}
+							else{
+								board.set(targXCoor, targYCoor + 1, null);
+							}
+							System.out.println(board.toString(userColor));
+							continue;
+						}
+						else{
+							if (userColor.equals("W")){
+								System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSuccessful En Passant: " + chosen + "(" + myXCoor + "," + myYCoor + ") takes " + target + "(" + targXCoor + "," + targYCoor + ").  Pawn lands at (" + targXCoor + "," + (targYCoor - 1) + ")." + "\n");
+							}
+							else{
+								System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSuccessful En Passant: " + chosen + "(" + myXCoor + "," + myYCoor + ") takes " + target + "(" + targXCoor + "," + targYCoor + ").  Pawn lands at (" + targXCoor + "," + (targYCoor + 1) + ")." + "\n");
+							}
+							chosen.toggleHasMoved();
+							toggleUserColor();
+							System.out.println(board.toString(userColor));
+							continue;
+						}
+					}
+				}
+			}
+			
+			// Special move: Pawn advances two spaces
+			else if (target == null && chosen.getType().equals("PAWN") && Math.abs(myYCoor - targYCoor) == 2 && chosen.validMovement(myXCoor, myYCoor, targXCoor, targYCoor, board)){
+				board.set(targXCoor, targYCoor, chosen);
+				board.set(myXCoor, myYCoor, null);
+				if (kingCheckedAfterMove()){
+					board.set(myXCoor,myYCoor,board.set(targXCoor,targYCoor,target)); // Return pieces to original position by swapping 
+					System.out.println(board.toString(userColor));
+					continue;
+				}
+				else{
+					lastEnPassant = chosen;
+					chosen.toggleHasMoved();
+					System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSuccessful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
+					toggleUserColor();
+					System.out.println(board.toString(userColor));
+					continue;
+				}
+			}
 
 			// Checks if user's king is in check following moving
-			int xOfKing; // These variables keep track of the coordinates of the current user's king 
-			int yOfKing;
 			if (validMove(myXCoor, myYCoor, targXCoor, targYCoor, userColor)) {
 				if (chosen.getType().equals("KING")){
 					updateKingCoor(chosen.getColor(), targXCoor, targYCoor); 
 				}/* need to update it first because if the chosen piece is a king, then
 				I wouldn't want to ask for check on the same exact coords, but I would want to ask for check on 
 				the new coords of the king*/
-				if (userColor.equals("W")) { 
-					xOfKing = whiteKingXCoor;
-					yOfKing = whiteKingYCoor;
-				}
-				else {
-					xOfKing = blackKingXCoor;
-					yOfKing = blackKingYCoor;
-				}
 				board.set(targXCoor,targYCoor,chosen); // Tentatively move the chosen piece to the target position
 				board.set(myXCoor, myYCoor, null); // Remove chosen piece from old position
-				if (isChecked(userColor, xOfKing, yOfKing)) { // Check if the resulting position leads to a check on the user's king
-					if (kingPreviouslyChecked){ // Case when the user's king is checked in the turn before this one
-						System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInvalid Move: Your King is still in check.");
-					}
-					else{ // Case when the user's move brings the user's king into check
-						System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInvalid Move: Your King is in check after this move.");
-					}
+				if (kingCheckedAfterMove()) { // Check if the resulting position leads to a check on the user's king
 					board.set(myXCoor,myYCoor,board.set(targXCoor,targYCoor,target)); // Return pieces to original position by swapping 
 					if (chosen.getType().equals("KING")){
 						updateKingCoor(chosen.getColor(), myXCoor, myYCoor); 
@@ -365,11 +449,12 @@ public class Chess{
 				else { // Case when the resulting position does NOT result in a check on the user's king
 					chosen.toggleHasMoved();
 					if (target == null) { // Print feedback information to user
-						System.out.println("\n\n\n\n\n\n\n\n\n\nSuccessful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
+						System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSuccessful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
 					}
 					else {  // Print feedback information to user
-						System.out.println("\n\n\n\n\n\n\n\n\n\nSuccessful kill: " + chosen + " (" + myXCoor + "," + myYCoor + ") takes " + target + " (" + targXCoor + "," + targYCoor + ").\n");
+						System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSuccessful kill: " + chosen + " (" + myXCoor + "," + myYCoor + ") takes " + target + " (" + targXCoor + "," + targYCoor + ").\n");
 					}
+					lastEnPassant = null; // If En Passant not used, opportunity is lost
 					toggleUserColor(); // Toggle switching of turns after successful move
 				}
 			}
@@ -387,16 +472,11 @@ public class Chess{
 				board.set(i,u,null);
 			}
 		}
-		board.set(0,6,new Rook("B"));
-		board.set(4,0,new Rook("B"));
 		board.set(4,7,new King("W"));
-		board.set(3,0,new Queen("B"));
-		board.set(5,0,new Queen("B"));
-		board.set(6,4,new King("B"));
-		board.set(6,5,new Bishop("B"));
-		board.set(7,7,new Bishop("W"));
-		blackKingXCoor = 6;
-		blackKingYCoor = 4;
+		board.set(4,0,new King("B"));
+		board.set(3,6,new Pawn("W"));
+		board.set(2,5,new Queen("B"));
+		board.set(3,1,new Pawn("B"));
 		isChecked("W",4,7);
 		System.out.println("White King can move:" + canMove("W",4,7));
 		System.out.println("White can intercept:" + canIntercept("W",4,7));

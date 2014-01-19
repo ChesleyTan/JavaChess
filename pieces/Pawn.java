@@ -21,17 +21,14 @@ public class Pawn extends ChessPiece{
 					System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInvalid Move: Path Blocked.");
 					return false;
 				}
-				hasMoved = true;
 				return true;
 			}
 			else if (myYCoor + (offset / 2) == targYCoor && myXCoor == targXCoor){
-				hasMoved = true;
 				return true;
 			}
 		}
 		else if (Math.abs(offset) == 1){
 			if (myYCoor + offset == targYCoor && myXCoor == targXCoor){
-				hasMoved = true;
 				return true;
 			}
 		}
@@ -47,7 +44,6 @@ public class Pawn extends ChessPiece{
 			return false;
 		}
 	} 
-	public boolean getHasMoved(){ return hasMoved; }
 	public String toString(){
 		return COLOR + "-" + "P";
 	}
