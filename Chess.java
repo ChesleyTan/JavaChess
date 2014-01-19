@@ -13,6 +13,7 @@ public class Chess{
 	private static ChessPiece lastEnPassant = null; 
 	private static boolean kingPreviouslyChecked = false;
 	private static Board board = new Board();
+	private final static String clearScreen = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 	public static void loopRound(){ // Tasks to be done when looping a round
 		System.out.println(board.toString(userColor));
 	}
@@ -51,10 +52,10 @@ public class Chess{
 		boolean retBool;
 		if (retBool = isChecked(userColor, getXOfKing(userColor), getYOfKing(userColor))) { // Check if the resulting position leads to a check on the user's king
 			if (kingPreviouslyChecked){ // Case when the user's king is checked in the turn before this one
-				System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInvalid Move: Your King is still in check.");
+				System.out.println(clearScreen + "Invalid Move: Your King is still in check.");
 			}
 			else{ // Case when the user's move brings the user's king into check
-				System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInvalid Move: Your King is in check after this move.");
+				System.out.println(clearScreen + "Invalid Move: Your King is in check after this move.");
 			}
 		}
 		return retBool;
@@ -87,7 +88,7 @@ public class Chess{
 		}
 		return isChecked;
 	}
-	
+
 	// Method to check if a king can move within its 3x3 surrounding
 	public static boolean canMove(String color, int kingXCoor, int kingYCoor) {
 		ChessPiece king = board.get(kingXCoor, kingYCoor);
@@ -108,7 +109,7 @@ public class Chess{
 		}
 		return false;
 	}
-	
+
 	// Method to check if any of the user's pieces can block or kill an enemy piece that is checking the user's king
 	public static boolean canIntercept(String color, int kingXCoor, int kingYCoor){
 		King king = (King)board.get(kingXCoor,kingYCoor);
@@ -137,7 +138,7 @@ public class Chess{
 								System.out.println("Checker: " + checker);
 								System.out.println("Interceptor: " + interceptor);
 								System.out.println((intersection != null) ? "Intersect at (" + intersection[0] + "," + intersection[1] + ")" : "No intersection");
-								
+
 								int xOfIntersection, yOfIntersection;
 								if (intersection != null && (int)intersection[0] == intersection[1] && (int)intersection[1] == intersection[1]){
 									xOfIntersection = (int)intersection[0];
@@ -178,7 +179,7 @@ public class Chess{
 		}
 		return false;
 	}
-	
+
 	public static boolean isCheckmate(){
 		int kingXCoor, kingYCoor;
 		if (userColor.equals("W")){
@@ -263,26 +264,26 @@ public class Chess{
 		cheat();
 
 		// Set up player names
-		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+		System.out.println(clearScreen);
 		do{
 			System.out.print("Player 1 Name: ");
 			player1 = scanStr.nextLine();
-			System.out.print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPlayer 2 Name: ");
+			System.out.print(clearScreen + "Player 2 Name: ");
 			player2 = scanStr.nextLine();
 			if (player1.equals(player2))
-				System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPlease choose a different name.");
+				System.out.println(clearScreen + "Please choose a different name.");
 			else
 				System.out.println("P1:" + player1 + " P2:" + player2);
 		}while(player1.equals(player2));
 
 		// Start Game
-		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nBoard:\n");
+		System.out.println(clearScreen + "Board:\n");
 		System.out.println(board.toString(userColor));
 		ChessPiece chosen = null;
 		ChessPiece target;
 		int myXCoor,myYCoor,targXCoor,targYCoor;
 		while (!isCheckmate()){
-			
+
 			// Checks if user's king is in check before moving
 			if (userColor.equals("W")){
 				if (isChecked(userColor, whiteKingXCoor, whiteKingYCoor)){ // Check whether the user's king is in check prior to user's turn
@@ -339,7 +340,7 @@ public class Chess{
 									updateKingCoor(chosen.getColor(), 6, myYCoor);
 									chosen.toggleHasMoved();
 									target.toggleHasMoved();
-									System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSuccessful castle: Kingside");
+									System.out.println(clearScreen + "Successful castle: Kingside");
 									advanceRound();
 									continue;
 								}
@@ -356,7 +357,7 @@ public class Chess{
 									updateKingCoor(chosen.getColor(), 2, myYCoor);
 									chosen.toggleHasMoved();
 									target.toggleHasMoved();
-									System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSuccessful castle: Queenside");
+									System.out.println(clearScreen + "Successful castle: Queenside");
 									advanceRound();
 									continue;
 								}
@@ -378,7 +379,7 @@ public class Chess{
 					}
 				}
 			}
-			
+
 			// Special move: En Passant
 			else if (target != null && chosen.getType().equals("PAWN") && target.getType().equals("PAWN") && !target.getColor().equals(userColor)){
 				if (myYCoor == targYCoor){
@@ -393,7 +394,7 @@ public class Chess{
 							board.set(myXCoor, myYCoor, null);
 							board.set(targXCoor, targYCoor + 1, chosen);
 						}
-						
+
 						if (kingCheckedAfterMove()) { // Check if the resulting position leads to a check on the user's king
 							board.set(myXCoor, myYCoor, chosen);
 							board.set(targXCoor, targYCoor, target);
@@ -408,10 +409,10 @@ public class Chess{
 						}
 						else{
 							if (userColor.equals("W")){
-								System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSuccessful En Passant: " + chosen + "(" + myXCoor + "," + myYCoor + ") takes " + target + "(" + targXCoor + "," + targYCoor + ").  Pawn lands at (" + targXCoor + "," + (targYCoor - 1) + ")." + "\n");
+								System.out.println(clearScreen + "Successful En Passant: " + chosen + "(" + myXCoor + "," + myYCoor + ") takes " + target + "(" + targXCoor + "," + targYCoor + ").  Pawn lands at (" + targXCoor + "," + (targYCoor - 1) + ")." + "\n");
 							}
 							else{
-								System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSuccessful En Passant: " + chosen + "(" + myXCoor + "," + myYCoor + ") takes " + target + "(" + targXCoor + "," + targYCoor + ").  Pawn lands at (" + targXCoor + "," + (targYCoor + 1) + ")." + "\n");
+								System.out.println(clearScreen + "Successful En Passant: " + chosen + "(" + myXCoor + "," + myYCoor + ") takes " + target + "(" + targXCoor + "," + targYCoor + ").  Pawn lands at (" + targXCoor + "," + (targYCoor + 1) + ")." + "\n");
 							}
 							chosen.toggleHasMoved();
 							advanceRound();
@@ -420,7 +421,7 @@ public class Chess{
 					}
 				}
 			}
-			
+
 			// Special move: Pawn advances two spaces
 			else if (target == null && chosen.getType().equals("PAWN") && !chosen.hasMoved() && Math.abs(myYCoor - targYCoor) == 2 && chosen.validMovement(myXCoor, myYCoor, targXCoor, targYCoor, board)){
 				board.set(targXCoor, targYCoor, chosen);
@@ -432,7 +433,7 @@ public class Chess{
 				}
 				else{
 					chosen.toggleHasMoved();
-					System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSuccessful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
+					System.out.println(clearScreen + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
 					advanceRound();	
 					lastEnPassant = chosen;
 					continue;
@@ -459,10 +460,10 @@ public class Chess{
 				else { // Case when the resulting position does NOT result in a check on the user's king
 					chosen.toggleHasMoved();
 					if (target == null) { // Print feedback information to user
-						System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSuccessful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
+						System.out.println(clearScreen + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
 					}
 					else {  // Print feedback information to user
-						System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSuccessful kill: " + chosen + " (" + myXCoor + "," + myYCoor + ") takes " + target + " (" + targXCoor + "," + targYCoor + ").\n");
+						System.out.println(clearScreen + "Successful kill: " + chosen + " (" + myXCoor + "," + myYCoor + ") takes " + target + " (" + targXCoor + "," + targYCoor + ").\n");
 					}
 					lastEnPassant = null; // If En Passant not used, opportunity is lost
 					toggleUserColor(); // Toggle switching of turns after successful move

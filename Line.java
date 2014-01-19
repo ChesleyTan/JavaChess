@@ -53,9 +53,9 @@ public class Line{
 			}
 		}
 		else if (_y != 1){
-				_x /= _y; 
-				_c /= _y; 
-				_y = 1; 
+			_x /= _y; 
+			_c /= _y; 
+			_y = 1; 
 		}
 	}
 	public double[] getIntersection(Line l){
