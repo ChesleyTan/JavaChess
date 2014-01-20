@@ -99,42 +99,5 @@ public class Board {
 		}
 		return foo.substring(0,foo.length()-1); // Remove extra newline
 	}
-
-	//public boolean move(int myXCoor, int myYCoor, int targXCoor, int targYCoor, String myColor){
-	//	ChessPiece myPiece = _board[myYCoor][myXCoor];
-	//	// Preliminary checks already done in Chess.java
-	//	//if (myPiece.getColor() != myColor || myPiece == null){
-	//	//	System.out.println("That is not a valid piece for you to choose.");
-	//	//	return false;
-	//	//}
-	//	ChessPiece targPiece = _board[targYCoor][targXCoor];
-	//	if (targPiece != null && myPiece.getColor().equals(targPiece.getColor())){
-	//		System.out.println("\nInvalid move: Attacking own piece.\n");
-	//		return false;
-	//	}
-	//	if (targPiece == null){
-	//		if (myPiece.validMovement(myXCoor,myYCoor,targXCoor,targYCoor,this)){
-	//			_board[targYCoor][targXCoor] = myPiece;
-	//			_board[myYCoor][myXCoor] = null;
-	//			myPiece.toggleHasMoved();
-	//			System.out.println("\n\n\n\n\n\n\n\n\n\nSuccessful move: " + myPiece + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
-	//			return true;
-	//		}
-	//		else{
-	//			System.out.println("\n\n\n\n\n\n\n\n\nInvalid move: " + "(" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
-	//			return false;
-	//		}
-	//	}
-	//	else if (myPiece.validAttack(myXCoor,myYCoor,targXCoor,targYCoor,this)){
-	//		_board[targYCoor][targXCoor] = myPiece;
-	//		_board[myYCoor][myXCoor] = null;
-	//		myPiece.toggleHasMoved();
-	//		System.out.println("\n\n\n\n\n\n\n\n\n\nSuccessful kill: " + myPiece + " (" + myXCoor + "," + myYCoor + ") takes " + targPiece + " (" + targXCoor + "," + targYCoor + ").\n");
-	//		return true;
-	//	}
-	//	System.out.println("\n\n\n\n\n\n\n\n\nInvalid move: " + "(" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
-	//	return false;
-	//}
-
 }
 

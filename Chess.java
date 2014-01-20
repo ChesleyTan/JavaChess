@@ -25,7 +25,6 @@ public class Chess{
 		System.out.println(board.toString(userColor));
 	}
 	public static void advanceRound(){ // Tasks to be done at the end of a successful round
-		DeltaBoard.backup(previousBoard, board); // We want to back up the board BEFORE toggling hasMoved
 		chosen.toggleHasMoved();
 		for (int i = 0;i < 8;i++){
 			for (int u = 0;u < 8;u++){
@@ -40,6 +39,7 @@ public class Chess{
 		if (target != null && target.getType().equals("ROOK") && target.getColor().equals(userColor)){ // If the completed move was a castle, then toggle hasMoved for rook
 			target.toggleHasMoved();
 		}
+		DeltaBoard.backup(previousBoard, board); 
 		toggleUserColor();
 		System.out.println(board.toString(userColor));
 		if (debugMode){
@@ -255,7 +255,9 @@ public class Chess{
 		}
 		if (isChecked(userColor, kingXCoor, kingYCoor, false)){
 			if (!canMove(userColor, kingXCoor, kingYCoor)){
-				System.out.println("KING CANNOT MOVE");
+				if (debugMode){
+					System.out.println("KING CANNOT MOVE");
+				}
 				if (!canIntercept(userColor, kingXCoor, kingYCoor)){
 					if (userColor.equals("B")){ // if checkmate is true, then other player wins
 						winner = player1;

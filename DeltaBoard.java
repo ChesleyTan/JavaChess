@@ -9,11 +9,21 @@ import java.util.ArrayList;
 public class DeltaBoard{
 	private static boolean debugMode = false;
 	private static ArrayList<Object[][]> history = new ArrayList<Object[][]>();
+	// Method to create a copy of a board
 	public static Board cloneBoard(Board board){
 		Board retBoard = new Board();
 		for (int i = 0;i < 8;i++){
 			for (int u = 0;u < 8;u++){
-				retBoard.set(i, u, board.get(i, u));
+				if (board.get(i, u) != null){
+					try{
+						retBoard.set(i, u, (ChessPiece)board.get(i, u).clone());
+					} catch (CloneNotSupportedException e){
+						System.err.println("CloneNotSupportedException when cloning Board in DeltaBoard: " + e.getMessage());
+					}
+				}
+				else{
+					retBoard.set(i, u, null);
+				}
 			}
 		}
 		return retBoard;
