@@ -583,6 +583,7 @@ public class Chess{
 					if (chosen.getType().equals("KING")){
 						updateKingCoor(chosen.getColor(), myXCoor, myYCoor); 
 					}
+					loopRound();
 				}
 
 				else { // Case when the resulting position does NOT result in a check on the user's king
