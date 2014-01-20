@@ -2,6 +2,7 @@ package JavaChess;
 import JavaChess.pieces.*;
 import java.util.Scanner;
 public class Chess{
+	private static Console console = new Console();
 	private static Scanner scanInt = new Scanner(System.in);
 	private static Scanner scanStr = new Scanner(System.in);
 	private static String player1, player2, winner;
@@ -532,6 +533,7 @@ public class Chess{
 	public static void main(String[] args){
 		//cheat();
 
+		console.start();
 		setup();
 
 		System.out.println(clearScreen + "Board:\n");
