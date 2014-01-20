@@ -16,8 +16,8 @@ public class Chess{
 	private static boolean kingPreviouslyChecked = false;
 	private static Board board = new Board();
 	private static Board previousBoard = board;
-	//private final static String clearScreen = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
-	private final static String clearScreen = "\n";
+	private final static String clearScreen = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+	//private final static String clearScreen = "\n";
 	private final static boolean debugMode = false;
 
 	public static void loopRound(){ // Tasks to be done when looping a round
@@ -581,6 +581,7 @@ public class Chess{
 					if (chosen.getType().equals("KING")){
 						updateKingCoor(chosen.getColor(), myXCoor, myYCoor); 
 					}
+					loopRound();
 				}
 
 				else { // Case when the resulting position does NOT result in a check on the user's king
