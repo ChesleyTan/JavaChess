@@ -16,9 +16,10 @@ public class Chess{
 	private static ChessPiece lastEnPassant = null; 
 	private static boolean kingPreviouslyChecked = false;
 	private static Board board = new Board();
+	private static Board previousBoard = board;
 	//private final static String clearScreen = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 	private final static String clearScreen = "\n";
-	private final static boolean debugMode = true;
+	private final static boolean debugMode = false;
 
 	public static void loopRound(){ // Tasks to be done when looping a round
 		System.out.println(board.toString(userColor));
@@ -27,6 +28,10 @@ public class Chess{
 		lastEnPassant = null;
 		toggleUserColor();
 		System.out.println(board.toString(userColor));
+		DeltaBoard.backup(previousBoard, board);
+		if (debugMode){
+			System.out.println(DeltaBoard.toString(1));
+		}
 	}
 	public static int getXOfKing(String userColor){
 		if (userColor.equals("W")){
@@ -486,12 +491,22 @@ public class Chess{
 	}
 
 	// Method to get user choice from console for piece to move and target to move to
-	public static void getUserChoice(){
+	public static boolean getUserChoice(){
+		boolean shouldCallContinue = false;
 		chosen = null;
 		do {
 			System.out.println((userColor.equals("W"))?player1 + "'s turn:":player2 + "'s turn:");        
-			System.out.println("Choose your piece to move: Tell me its x-coordinate.");
-			myXCoor = InputValidator.nextValidInt(scanInt,0,7);
+			System.out.println("Choose your piece to move: Tell me its x-coordinate. Or, to undo the last move, input -1.");
+			myXCoor = InputValidator.nextValidInt(scanInt,-1,7);
+			if (myXCoor == -1){
+				if (DeltaBoard.getHistorySize() > 0){ // Prevent undos beyond the start of the game
+					toggleUserColor();
+				}
+				board = DeltaBoard.restorePrev(board);
+				loopRound();
+				shouldCallContinue = true;
+				return shouldCallContinue;
+			}
 			System.out.println("Now tell me its y-coordinate.");
 			myYCoor = InputValidator.nextValidInt(scanInt,0,7);
 			chosen = board.get(myXCoor,myYCoor);
@@ -505,6 +520,7 @@ public class Chess{
 		System.out.println("Now tell me its y-coordinate.");
 		targYCoor = InputValidator.nextValidInt(scanInt,0,7);
 		target = board.get(targXCoor, targYCoor);
+		return shouldCallContinue;
 	}
 	public static void main(String[] args){
 		//cheat();
@@ -514,14 +530,18 @@ public class Chess{
 		System.out.println(clearScreen + "Board:\n");
 		System.out.println(board.toString(userColor));
 		while (!isCheckmate()){ // Runs game until a player wins
-
+		
+			previousBoard = DeltaBoard.cloneBoard(board);
 			// Checks if user's king is in check before moving
 			if (isChecked(userColor, getXOfKing(userColor), getYOfKing(userColor), false)){ // Check whether the user's king is in check prior to user's turn
 				System.out.println("Your King is in check!");
 			} 
 			kingPreviouslyChecked = ((King)board.get(getXOfKing(userColor),getYOfKing(userColor))).isChecked(); // Keeps track of whether the user's king was checked before this turn
 
-			getUserChoice();
+			// getUserChoice() returns boolean signifying if iteration of the loop should be skipped
+			if (getUserChoice()){
+				continue;
+			}
 			
 			// handleCastle() returns boolean signifying if iteration of the loop should be skipped
 			if (handleCastle()){
@@ -567,12 +587,10 @@ public class Chess{
 					else {  // Print feedback information to user
 						System.out.println(clearScreen + "Successful kill: " + chosen + " (" + myXCoor + "," + myYCoor + ") takes " + target + " (" + targXCoor + "," + targYCoor + ").\n");
 					}
-					lastEnPassant = null; // If En Passant not used, opportunity is lost
-					toggleUserColor(); // Toggle switching of turns after successful move
+					advanceRound();
 				}
 			}
 
-			System.out.println(board.toString(userColor)); // Print out board at the end of while loop
 		}
 		System.out.println("CHECKMATE, " + winner.toUpperCase() + " WINS!"); // Print out victory at termination of while loop
 	}
