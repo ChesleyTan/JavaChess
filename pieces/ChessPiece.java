@@ -5,8 +5,7 @@ public abstract class ChessPiece implements Cloneable{
 	protected final String TYPE;
 	protected final String COLOR;
 	protected final int RANGE;
-	protected double[] ATTACK_SLOPES;
-	protected boolean isPinned = false;
+	protected double[] ATTACK_SLOPES; // Keeps track of possible attack angles, used by canIntercept() in Chess.java
 	protected boolean hasMoved = false;
 	protected ChessPiece(String type, String color, int range, double[] attack_slopes){
 		TYPE = type.toUpperCase();
@@ -32,6 +31,8 @@ public abstract class ChessPiece implements Cloneable{
 			return (myYCoor - targYCoor * 1.0) / (myXCoor - targXCoor);
 		}
 	}
+	
+	// clone() used by DeltaBoard to create a backup of a Board and its ChessPieces
 	public Object clone() throws CloneNotSupportedException {
 		ChessPiece clone = (ChessPiece)super.clone();
 		return clone;

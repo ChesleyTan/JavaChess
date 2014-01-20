@@ -1,5 +1,0 @@
-implement pawn promotion
-
-Future-
-GUI
-Save and simulate games with txt file containing shorthand notation

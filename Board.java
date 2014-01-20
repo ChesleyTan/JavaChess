@@ -65,6 +65,8 @@ public class Board {
 		}
 		return foo.substring(0,foo.length()-1); // Remove extra newline
 	}
+
+	// Takes argument of user color, prints board depending on whose turn it is
 	public String toString(String color){
 		String retStr = "============================================================\n";
 		if (color.equals("W")){

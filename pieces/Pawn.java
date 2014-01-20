@@ -1,7 +1,7 @@
 package JavaChess.pieces;
 import JavaChess.Board;
 public class Pawn extends ChessPiece{
-	private boolean lastPawnJump = false;
+	private boolean lastPawnJump = false; // Keeps track of whether this Pawn last advanced two spaces, leaving it vulnerable to an En Passant
 	public Pawn(String color){
 		super("PAWN", color, 2, new double[] {1d,-1d});
 	}

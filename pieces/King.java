@@ -3,7 +3,7 @@ import JavaChess.Board;
 import java.util.ArrayList;
 public class King extends ChessPiece{
 	private boolean isChecked = false;
-	private ArrayList<int[]> checkedBy = new ArrayList<int[]>();
+	private ArrayList<int[]> checkedBy = new ArrayList<int[]>();  // Keeps track of the coordinates of the pieces currently checking the king
 	public void addCheckedBy(int[] arr){
 		checkedBy.add(arr);
 	}
