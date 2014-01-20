@@ -17,7 +17,6 @@ public abstract class ChessPiece implements Cloneable{
 	public String getColor(){ return COLOR; }
 	public int getRange(){ return RANGE; }
 	public double[] getAttackSlopes(){ return ATTACK_SLOPES; }
-	public boolean getIsPinned(){ return isPinned; }
 	public boolean hasMoved(){ return hasMoved; }
 	public void toggleHasMoved(){ hasMoved = true; } 
 	public abstract boolean validMovement(int myXCoor, int myYCoor, int targXCoor, int targYCoor, Board board); // Checks to see if the piece can naturally make such a movement

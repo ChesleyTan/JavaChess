@@ -17,7 +17,7 @@ public class Console extends JTextArea {
 
     public static Font loadFont() {
         try {
-            InputStream inStream = new BufferedInputStream(new FileInputStream("JavaChess/UbuntuMono-B.ttf"));
+            InputStream inStream = new BufferedInputStream(new FileInputStream("JavaChess/resources/UbuntuMono-B.ttf"));
             consoleCustomFont = Font.createFont(Font.TRUETYPE_FONT, inStream).deriveFont(Font.BOLD, 18);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(consoleCustomFont);

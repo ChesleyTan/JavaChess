@@ -1,6 +1,9 @@
 package JavaChess;
 import JavaChess.pieces.*;
 import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 public class Chess{
 	//private static Console console = new Console();
 	private static Scanner scanInt = new Scanner(System.in);
@@ -17,8 +20,8 @@ public class Chess{
 	private static boolean kingPreviouslyChecked = false;
 	private static Board board = new Board();
 	private static Board previousBoard = board;
-	//private final static String clearScreen = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
-	private final static String clearScreen = "\n";
+	private final static String clearScreen = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+	//private final static String clearScreen = "\n";
 	private final static boolean debugMode = false;
 
 	public static void loopRound(){ // Tasks to be done when looping a round
@@ -520,6 +523,7 @@ public class Chess{
 					toggleUserColor();
 				}
 				board = DeltaBoard.restorePrev(board);
+				System.out.println(clearScreen);
 				loopRound();
 				shouldCallContinue = true;
 				return shouldCallContinue;
@@ -543,6 +547,43 @@ public class Chess{
 		//cheat();
 
 		//console.start();
+		System.out.println(clearScreen + clearScreen + "Welcome to ChessWeasel - A Java Chess Game");
+		for (int i = 0;i < 5;i++){
+			try{
+				System.out.println();
+				Thread.sleep(300);
+			} catch (InterruptedException e){
+				System.err.println(e.getMessage());
+			}
+		}
+
+		System.out.println("by Chesley Tan and Christopher Kim");
+
+		for (int i = 0;i < 5;i++){
+			try{
+				System.out.println();
+				Thread.sleep(300);
+			} catch (InterruptedException e){
+				System.err.println(e.getMessage());
+			}
+		}
+
+
+		try{
+			BufferedReader asciiReader = new BufferedReader(new FileReader("JavaChess/resources/ascii.txt")); // Credits in ascii.txt 
+			String nextLine = "";	
+			while (!(nextLine = asciiReader.readLine()).trim().equals("")){  // Read until a blank line is found
+				System.out.println(nextLine);
+				Thread.sleep(300);
+			}
+			for (int i = 0;i < 5;i++){
+				System.out.println();
+				Thread.sleep(300);
+			}
+		} catch (Exception e){
+			System.err.println(e.getMessage());
+		}
+
 		setup();
 
 		System.out.println(clearScreen + "Board:\n");
