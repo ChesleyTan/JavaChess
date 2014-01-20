@@ -2,7 +2,7 @@ package JavaChess;
 import JavaChess.pieces.*;
 import java.util.Scanner;
 public class Chess{
-	private static Console console = new Console();
+	//private static Console console = new Console();
 	private static Scanner scanInt = new Scanner(System.in);
 	private static Scanner scanStr = new Scanner(System.in);
 	private static String player1, player2, winner;
@@ -135,17 +135,23 @@ public class Chess{
 							board.set(kingXCoor, kingYCoor, null);
 							updateKingCoor(userColor, newXCoor, newYCoor);
 							if (!isChecked(color, newXCoor, newYCoor, true)) { // If there exists a position where the king is not in check, then return true
+								if (debugMode){
+									System.out.println("KING NOT IN CHECK HERE");
+								}
 								retBool = true;
 							}
 							board.set(newXCoor, newYCoor, null);
 							board.set(kingXCoor, kingYCoor, king);
 							updateKingCoor(userColor, kingXCoor, kingYCoor);
 						}
-						else if (target != null && king.validAttack(kingXCoor, kingYCoor, newXCoor, newYCoor, board)) {
+						else if (target != null && !target.getColor().equals(userColor) && king.validAttack(kingXCoor, kingYCoor, newXCoor, newYCoor, board)) {
 							board.set(newXCoor, newYCoor, king);
 							board.set(kingXCoor, kingYCoor, null);
 							updateKingCoor(userColor, newXCoor, newYCoor);
 							if (!isChecked(color, newXCoor, newYCoor, true)) { // If there exists a position where the king is not in check, then return true
+								if (debugMode){
+									System.out.println("KING NOT IN CHECK HERE");
+								}
 								retBool = true;
 							}
 							board.set(newXCoor, newYCoor, target);
@@ -249,6 +255,7 @@ public class Chess{
 		}
 		if (isChecked(userColor, kingXCoor, kingYCoor, false)){
 			if (!canMove(userColor, kingXCoor, kingYCoor)){
+				System.out.println("KING CANNOT MOVE");
 				if (!canIntercept(userColor, kingXCoor, kingYCoor)){
 					if (userColor.equals("B")){ // if checkmate is true, then other player wins
 						winner = player1;
@@ -533,7 +540,7 @@ public class Chess{
 	public static void main(String[] args){
 		//cheat();
 
-		console.start();
+		//console.start();
 		setup();
 
 		System.out.println(clearScreen + "Board:\n");
