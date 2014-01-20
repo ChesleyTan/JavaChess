@@ -13,7 +13,6 @@ public class Chess{
 	private static int blackKingYCoor = 0;
 	private static int whiteKingYCoor = 7;
 	private static String userColor = "W";
-	private static ChessPiece lastEnPassant = null; 
 	private static boolean kingPreviouslyChecked = false;
 	private static Board board = new Board();
 	private static Board previousBoard = board;
@@ -25,10 +24,23 @@ public class Chess{
 		System.out.println(board.toString(userColor));
 	}
 	public static void advanceRound(){ // Tasks to be done at the end of a successful round
-		lastEnPassant = null;
+		DeltaBoard.backup(previousBoard, board); // We want to back up the board BEFORE toggling hasMoved
+		chosen.toggleHasMoved();
+		for (int i = 0;i < 8;i++){
+			for (int u = 0;u < 8;u++){
+				ChessPiece piece = board.get(i, u);
+				if (piece != null && piece.getType().equals("PAWN") && piece.getColor().equals(userColor)){
+					if (((Pawn)piece).getLastPawnJump()){
+						((Pawn)piece).setLastPawnJump(false);
+					}
+				}
+			}
+		}
+		if (target != null && target.getType().equals("ROOK") && target.getColor().equals(userColor)){ // If the completed move was a castle, then toggle hasMoved for rook
+			target.toggleHasMoved();
+		}
 		toggleUserColor();
 		System.out.println(board.toString(userColor));
-		DeltaBoard.backup(previousBoard, board);
 		if (debugMode){
 			System.out.println(DeltaBoard.toString(1));
 		}
@@ -361,8 +373,6 @@ public class Chess{
 								board.set(4,myYCoor,null);
 								board.set(7,myYCoor,null);
 								updateKingCoor(chosen.getColor(), 6, myYCoor);
-								chosen.toggleHasMoved();
-								target.toggleHasMoved();
 								System.out.println(clearScreen + "Successful castle: Kingside");
 								advanceRound();
 								shouldCallContinue = true;
@@ -378,8 +388,6 @@ public class Chess{
 								board.set(4,myYCoor,null);
 								board.set(0,myYCoor,null);
 								updateKingCoor(chosen.getColor(), 2, myYCoor);
-								chosen.toggleHasMoved();
-								target.toggleHasMoved();
 								System.out.println(clearScreen + "Successful castle: Queenside");
 								advanceRound();
 								shouldCallContinue = true;
@@ -412,7 +420,7 @@ public class Chess{
 		boolean shouldCallContinue = false;	// Returns whether the while loop should skip the current iteration
 		if (target != null && chosen.getType().equals("PAWN") && target.getType().equals("PAWN") && !target.getColor().equals(userColor)){
 			if (myYCoor == targYCoor){
-				if (lastEnPassant == target){
+				if (((Pawn)target).getLastPawnJump()){
 					if (userColor.equals("W")){
 						board.set(targXCoor, targYCoor, null);
 						board.set(myXCoor, myYCoor, null);
@@ -443,7 +451,6 @@ public class Chess{
 						else{
 							System.out.println(clearScreen + "Successful En Passant: " + chosen + "(" + myXCoor + "," + myYCoor + ") takes " + target + "(" + targXCoor + "," + targYCoor + ").  Pawn lands at (" + targXCoor + "," + (targYCoor + 1) + ")." + "\n");
 						}
-						chosen.toggleHasMoved();
 						advanceRound();
 						shouldCallContinue = true;
 					}
@@ -465,10 +472,9 @@ public class Chess{
 				shouldCallContinue = true;
 			}
 			else{
-				chosen.toggleHasMoved();
 				System.out.println(clearScreen + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
 				advanceRound();	
-				lastEnPassant = chosen;
+				((Pawn)chosen).setLastPawnJump(true);
 				shouldCallContinue = true;
 			}
 		}
@@ -498,6 +504,7 @@ public class Chess{
 			System.out.println((userColor.equals("W"))?player1 + "'s turn:":player2 + "'s turn:");        
 			System.out.println("Choose your piece to move: Tell me its x-coordinate. Or, to undo the last move, input -1.");
 			myXCoor = InputValidator.nextValidInt(scanInt,-1,7);
+			// Implementation for undoing a move
 			if (myXCoor == -1){
 				if (DeltaBoard.getHistorySize() > 0){ // Prevent undos beyond the start of the game
 					toggleUserColor();
@@ -580,7 +587,6 @@ public class Chess{
 					if (chosen.getType().equals("PAWN")){
 						handlePawnPromotion(targXCoor, targYCoor);	
 					}
-					chosen.toggleHasMoved();
 					if (target == null) { // Print feedback information to user
 						System.out.println(clearScreen + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
 					}

@@ -1,7 +1,7 @@
 package JavaChess.pieces;
 import JavaChess.Board;
 
-public abstract class ChessPiece{
+public abstract class ChessPiece implements Cloneable{
 	protected final String TYPE;
 	protected final String COLOR;
 	protected final int RANGE;
@@ -31,6 +31,10 @@ public abstract class ChessPiece{
 		else{
 			return (myYCoor - targYCoor * 1.0) / (myXCoor - targXCoor);
 		}
+	}
+	public Object clone() throws CloneNotSupportedException {
+		ChessPiece clone = (ChessPiece)super.clone();
+		return clone;
 	}
 
 }

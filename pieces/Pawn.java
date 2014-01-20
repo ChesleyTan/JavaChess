@@ -1,6 +1,7 @@
 package JavaChess.pieces;
 import JavaChess.Board;
 public class Pawn extends ChessPiece{
+	private boolean lastPawnJump = false;
 	public Pawn(String color){
 		super("PAWN", color, 2, new double[] {1d,-1d});
 	}
@@ -43,6 +44,12 @@ public class Pawn extends ChessPiece{
 			return false;
 		}
 	} 
+	public boolean getLastPawnJump(){
+		return lastPawnJump;
+	}
+	public void setLastPawnJump(boolean boo){
+		lastPawnJump = boo;
+	}
 	public String toString(){
 		return COLOR + "-" + "P";
 	}
