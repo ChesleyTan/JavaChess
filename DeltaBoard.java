@@ -68,16 +68,16 @@ public class DeltaBoard{
 		Object[][] deltaBoard = history.get(history.size() - 1);
 		for (int y = 0;y < 8;y++){
 			for (int x = 0;x < 8;x++){
-				if (deltaBoard[y][x] != 1){
-					if (deltaBoard[y][x] == 0){
+				if (deltaBoard[y][x] instanceof Integer){
+					if (((Integer)deltaBoard[y][x]) == 0){
 						previousBoard.set(x, y, null);
 					}
 					else{
-						previousBoard.set(x, y, (ChessPiece)deltaBoard[y][x]);
+						previousBoard.set(x, y, currentBoard.get(x,y));
 					}
 				}
 				else{
-					previousBoard.set(x, y, currentBoard.get(x,y));
+					previousBoard.set(x, y, (ChessPiece)deltaBoard[y][x]);
 				}
 			}
 		}
