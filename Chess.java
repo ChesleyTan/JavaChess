@@ -5,7 +5,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 public class Chess{
-	//private static Console console = new Console();
 	private static Scanner scanInt = new Scanner(System.in);
 	private static Scanner scanStr = new Scanner(System.in);
 	private static String player1, player2, winner;
@@ -20,10 +19,18 @@ public class Chess{
 	private static boolean kingPreviouslyChecked = false;
 	private static Board board = new Board();
 	private static Board previousBoard = board;
-	private final static String clearScreen = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
-	//private final static String clearScreen = "\n";
 	private final static boolean debugMode = false;
 
+	public static String clearScreen(){
+		String retStr = "";
+		if (debugMode){
+			retStr = "\n";
+		}
+		else{
+			retStr = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"; 	
+		}
+		return retStr;
+	}
 	public static void loopRound(){ // Tasks to be done when looping a round
 		System.out.println(board.toString(userColor));
 	}
@@ -50,18 +57,74 @@ public class Chess{
 		}
 	}
 	public static int getXOfKing(String userColor){
-		if (userColor.equals("W")){
+		if (userColor.equals("W")){ 
+			if (board.get(whiteKingXCoor, whiteKingYCoor) != null && board.get(whiteKingXCoor, whiteKingYCoor).getType().equals("KING")){ // Sanity check to make sure coords are correct
+				return whiteKingXCoor;
+			}
+			else{
+				for (int i = 0;i < 8;i++){
+					for (int u = 0;u < 8;u++){
+						ChessPiece piece = board.get(i, u);
+						if (piece != null && piece.getType().equals("KING") && piece.getColor().equals("W")){
+							whiteKingXCoor = i;
+							whiteKingYCoor = u;
+						}
+					}
+				}
+			}
 			return whiteKingXCoor;
 		}
 		else{
+			if (board.get(blackKingXCoor, blackKingYCoor) != null && board.get(blackKingXCoor, blackKingYCoor).getType().equals("KING")){ // Sanity check to make sure coords are correct
+				return blackKingXCoor;
+			}
+			else{
+				for (int i = 0;i < 8;i++){
+					for (int u = 0;u < 8;u++){
+						ChessPiece piece = board.get(i, u);
+						if (piece != null && piece.getType().equals("KING") && piece.getColor().equals("B")){
+							blackKingXCoor = i;
+							blackKingYCoor = u;
+						}
+					}
+				}
+			}
 			return blackKingXCoor;
 		}
 	}
 	public static int getYOfKing(String userColor){
 		if (userColor.equals("W")){
+			if (board.get(whiteKingXCoor, whiteKingYCoor) != null && board.get(whiteKingXCoor, whiteKingYCoor).getType().equals("KING")){ // Sanity check to make sure coords are correct
+				return whiteKingYCoor;
+			}
+			else{
+				for (int i = 0;i < 8;i++){
+					for (int u = 0;u < 8;u++){
+						ChessPiece piece = board.get(i, u);
+						if (piece != null && piece.getType().equals("KING") && piece.getColor().equals("W")){
+							whiteKingXCoor = i;
+							whiteKingYCoor = u;
+						}
+					}
+				}
+			}
 			return whiteKingYCoor;
 		}
 		else{
+			if (board.get(blackKingXCoor, blackKingYCoor) != null && board.get(blackKingXCoor, blackKingYCoor).getType().equals("KING")){ // Sanity check to make sure coords are correct
+				return blackKingYCoor;
+			}
+			else{
+				for (int i = 0;i < 8;i++){
+					for (int u = 0;u < 8;u++){
+						ChessPiece piece = board.get(i, u);
+						if (piece != null && piece.getType().equals("KING") && piece.getColor().equals("B")){
+							blackKingXCoor = i;
+							blackKingYCoor = u;
+						}
+					}
+				}
+			}
 			return blackKingYCoor;
 		}
 	}
@@ -79,10 +142,10 @@ public class Chess{
 		boolean retBool;
 		if (retBool = isChecked(userColor, getXOfKing(userColor), getYOfKing(userColor), false)) { // Check if the resulting position leads to a check on the user's king
 			if (kingPreviouslyChecked){ // Case when the user's king is checked in the turn before this one
-				System.out.println(clearScreen + "Invalid Move: Your King is still in check.");
+				System.out.println(clearScreen() + "Invalid Move: Your King is still in check.");
 			}
 			else{ // Case when the user's move brings the user's king into check
-				System.out.println(clearScreen + "Invalid Move: Your King is in check after this move.");
+				System.out.println(clearScreen() + "Invalid Move: Your King is in check after this move.");
 			}
 		}
 		return retBool;
@@ -248,14 +311,8 @@ public class Chess{
 
 	public static boolean isCheckmate(){
 		int kingXCoor, kingYCoor;
-		if (userColor.equals("W")){
-			kingXCoor = whiteKingXCoor;
-			kingYCoor = whiteKingYCoor;
-		}
-		else{
-			kingXCoor = blackKingXCoor;
-			kingYCoor = blackKingYCoor;
-		}
+		kingXCoor = getXOfKing(userColor);
+		kingYCoor = getYOfKing(userColor);
 		if (isChecked(userColor, kingXCoor, kingYCoor, false)){
 			if (!canMove(userColor, kingXCoor, kingYCoor)){
 				if (debugMode){
@@ -284,7 +341,7 @@ public class Chess{
 			targetRank = 7;
 		}
 		if (myYCoor == targetRank){
-			System.out.println(clearScreen + "What would you like to promote your pawn to?");
+			System.out.println(clearScreen() + "What would you like to promote your pawn to?");
 			System.out.println("[1] Bishop\n[2] Rook\n[3] Knight\n[4] Queen\n");
 			System.out.print("Number of your selection: ");
 			int choice = InputValidator.nextValidInt(scanInt, 1, 4);
@@ -337,7 +394,7 @@ public class Chess{
 		ChessPiece myPiece = board.get(myXCoor,myYCoor);
 		ChessPiece targPiece = board.get(targXCoor,targYCoor);
 		if (targPiece != null && myPiece.getColor().equals(targPiece.getColor())){
-			System.out.println("\nInvalid move: Attacking own piece.\n");
+			System.out.println(clearScreen() + "Invalid move: Attacking own piece.\n");
 			return false;
 		}
 		if (targPiece == null){
@@ -345,14 +402,14 @@ public class Chess{
 				return true;
 			}
 			else{
-				System.out.println("\n\n\n\n\n\n\n\n\nInvalid move: " + "(" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
+				System.out.println(clearScreen() + "Invalid move: " + "(" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
 				return false;
 			}
 		}
 		else if (myPiece.validAttack(myXCoor,myYCoor,targXCoor,targYCoor,board)){
 			return true;
 		}
-		System.out.println("\n\n\n\n\n\n\n\n\nInvalid move: " + "(" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
+		System.out.println(clearScreen() + "Invalid move: " + "(" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
 		return false;
 	}
 	public static void toggleUserColor(){
@@ -368,59 +425,67 @@ public class Chess{
 		if (target != null && chosen.getColor().equals(target.getColor())){
 			if (chosen.getType().equals("KING") && (target.getType().equals("ROOK"))){
 				if (((King)chosen).isChecked()){
-					System.out.println("Invalid Castle: King is in check.");
+					System.out.println(clearScreen() + "Invalid Castle: King is in check.");
 					loopRound();
 					shouldCallContinue = true;
+					return shouldCallContinue;
 				}
 				else{
 					if (!chosen.hasMoved() && !target.hasMoved()){
 						if (validCastle(myXCoor,myYCoor,targXCoor,targYCoor)){
 							if (myXCoor == 4 && targXCoor == 7){
 								if (isChecked(userColor, 5, myYCoor, true) || isChecked(userColor, 6, myYCoor, true)){
-									System.out.println("Invalid Castle: King passes through square attacked by enemy piece");
+									System.out.println(clearScreen() + "Invalid Castle: King passes through square attacked by enemy piece");
 									loopRound();
 									shouldCallContinue = true;
+									return shouldCallContinue;
 								}
 								board.set(6,myYCoor,chosen);
 								board.set(5,myYCoor,target);
 								board.set(4,myYCoor,null);
 								board.set(7,myYCoor,null);
 								updateKingCoor(chosen.getColor(), 6, myYCoor);
-								System.out.println(clearScreen + "Successful castle: Kingside");
+								System.out.println(clearScreen() + "Successful castle: Kingside");
 								advanceRound();
 								shouldCallContinue = true;
+								return shouldCallContinue;
 							}
 							else if (myXCoor == 4 && targXCoor == 0){
 								if (isChecked(userColor, 3, myYCoor, true) || isChecked(userColor, 2, myYCoor, true)){
-									System.out.println("Invalid Castle: King passes through square attacked by enemy piece");
+									System.out.println(clearScreen() + "Invalid Castle: King passes through square attacked by enemy piece");
 									loopRound();
 									shouldCallContinue = true;
+									return shouldCallContinue;
 								}
 								board.set(2,myYCoor,chosen);
 								board.set(3,myYCoor,target);
 								board.set(4,myYCoor,null);
 								board.set(0,myYCoor,null);
 								updateKingCoor(chosen.getColor(), 2, myYCoor);
-								System.out.println(clearScreen + "Successful castle: Queenside");
+								System.out.println(clearScreen() + "Successful castle: Queenside");
 								advanceRound();
 								shouldCallContinue = true;
+								return shouldCallContinue;
 							}
 							else{
-								System.out.println("Invalid Castle: Incorrect positioning.");
+								System.out.println(clearScreen() + "Invalid Castle: Incorrect positioning.");
 								loopRound();
 								shouldCallContinue = true;
+								return shouldCallContinue;
 							}
 						} 
 						else{
-							System.out.println("Invalid Castle: Path blocked.");
+							System.out.println(clearScreen() + "Invalid Castle: Path blocked.");
 							loopRound();
 							shouldCallContinue = true;
+							return shouldCallContinue;
 						}
 					}
 					else{
-						System.out.println("Invalid Castle: Either King or Rook has moved before.");
+						System.out.println(clearScreen() + "Invalid Castle: Either King or Rook has moved before.");
 						loopRound();
 						shouldCallContinue = true;
+						return shouldCallContinue;
 					}
 				}
 			}
@@ -459,10 +524,10 @@ public class Chess{
 					}
 					else{
 						if (userColor.equals("W")){
-							System.out.println(clearScreen + "Successful En Passant: " + chosen + "(" + myXCoor + "," + myYCoor + ") takes " + target + "(" + targXCoor + "," + targYCoor + ").  Pawn lands at (" + targXCoor + "," + (targYCoor - 1) + ")." + "\n");
+							System.out.println(clearScreen() + "Successful En Passant: " + chosen + "(" + myXCoor + "," + myYCoor + ") takes " + target + "(" + targXCoor + "," + targYCoor + ").  Pawn lands at (" + targXCoor + "," + (targYCoor - 1) + ")." + "\n");
 						}
 						else{
-							System.out.println(clearScreen + "Successful En Passant: " + chosen + "(" + myXCoor + "," + myYCoor + ") takes " + target + "(" + targXCoor + "," + targYCoor + ").  Pawn lands at (" + targXCoor + "," + (targYCoor + 1) + ")." + "\n");
+							System.out.println(clearScreen() + "Successful En Passant: " + chosen + "(" + myXCoor + "," + myYCoor + ") takes " + target + "(" + targXCoor + "," + targYCoor + ").  Pawn lands at (" + targXCoor + "," + (targYCoor + 1) + ")." + "\n");
 						}
 						advanceRound();
 						shouldCallContinue = true;
@@ -485,7 +550,7 @@ public class Chess{
 				shouldCallContinue = true;
 			}
 			else{
-				System.out.println(clearScreen + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
+				System.out.println(clearScreen() + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
 				advanceRound();	
 				((Pawn)chosen).setLastPawnJump(true);
 				shouldCallContinue = true;
@@ -496,14 +561,14 @@ public class Chess{
 
 	// Method to set up the game, prints to console
 	public static void setup(){
-		System.out.println(clearScreen);
+		System.out.println(clearScreen());
 		do{
 			System.out.print("Player 1 Name: ");
 			player1 = scanStr.nextLine();
-			System.out.print(clearScreen + "Player 2 Name: ");
+			System.out.print(clearScreen() + "Player 2 Name: ");
 			player2 = scanStr.nextLine();
 			if (player1.equals(player2))
-				System.out.println(clearScreen + "Please choose a different name.");
+				System.out.println(clearScreen() + "Please choose a different name.");
 			else
 				System.out.println("P1:" + player1 + " P2:" + player2);
 		}while(player1.equals(player2));
@@ -523,7 +588,7 @@ public class Chess{
 					toggleUserColor();
 				}
 				board = DeltaBoard.restorePrev(board);
-				System.out.println(clearScreen);
+				System.out.println(clearScreen());
 				loopRound();
 				shouldCallContinue = true;
 				return shouldCallContinue;
@@ -543,50 +608,77 @@ public class Chess{
 		target = board.get(targXCoor, targYCoor);
 		return shouldCallContinue;
 	}
+	public static String about(){
+		return 
+			"ChessWeasel is a Chess game written by Chesley Tan and Christopher Kim.\n\n" + 
+			"It follows all the standard rules of chess and includes\n\n" +
+			"all the special rules as well, including castling, en passant, and pawn promotion.\n\n" + 
+			"To attempt a castle: Select your king and select your rook as your target.\n\n" +
+			"To attempt an En Passant: Select your pawn and select the opponent pawn as your target.\n\n" + 
+			"ChessWeasel also includes an undo feature :)\n\n";
+	}
 	public static void main(String[] args){
 		//cheat();
 
-		//console.start();
-		System.out.println(clearScreen + clearScreen + "Welcome to ChessWeasel - A Java Chess Game");
-		for (int i = 0;i < 5;i++){
-			try{
-				System.out.println();
-				Thread.sleep(300);
-			} catch (InterruptedException e){
-				System.err.println(e.getMessage());
-			}
-		}
-
-		System.out.println("by Chesley Tan and Christopher Kim");
-
-		for (int i = 0;i < 5;i++){
-			try{
-				System.out.println();
-				Thread.sleep(300);
-			} catch (InterruptedException e){
-				System.err.println(e.getMessage());
-			}
-		}
-
-
-		try{
-			BufferedReader asciiReader = new BufferedReader(new FileReader("JavaChess/resources/ascii.txt")); // Credits in ascii.txt 
-			String nextLine = "";	
-			while (!(nextLine = asciiReader.readLine()).trim().equals("")){  // Read until a blank line is found
-				System.out.println(nextLine);
-				Thread.sleep(300);
-			}
+		if (!debugMode){
+			System.out.println(clearScreen() + clearScreen() + "Welcome to ChessWeasel - A Java Chess Game");
 			for (int i = 0;i < 5;i++){
-				System.out.println();
-				Thread.sleep(300);
+				try{
+					System.out.println();
+					Thread.sleep(300);
+				} catch (InterruptedException e){
+					System.err.println(e.getMessage());
+				}
 			}
-		} catch (Exception e){
-			System.err.println(e.getMessage());
+
+			System.out.println("    by Chesley Tan and Christopher Kim");
+
+			for (int i = 0;i < 5;i++){
+				try{
+					System.out.println();
+					Thread.sleep(300);
+				} catch (InterruptedException e){
+					System.err.println(e.getMessage());
+				}
+			}
+
+
+			try{
+				BufferedReader asciiReader = new BufferedReader(new FileReader("JavaChess/resources/ascii.txt")); // Credits in ascii.txt 
+				String nextLine = "";	
+				while (!(nextLine = asciiReader.readLine()).trim().equals("")){  // Read until a blank line is found
+					System.out.println(nextLine);
+					Thread.sleep(300);
+				}
+				for (int i = 0;i < 5;i++){
+					System.out.println();
+					Thread.sleep(300);
+				}
+			} catch (Exception e){
+				System.err.println(e.getMessage());
+			}
 		}
+
+		System.out.println(clearScreen() + "What would you like to do?\n[1] Start the game!\n[2] Read the instructions/about :D\n");
+		System.out.print("Choice: ");
+		int choice = InputValidator.nextValidInt(scanInt, 1, 2);
+		switch (choice){
+			case 1:
+				break;
+			case 2:
+				System.out.println(clearScreen());
+				System.out.println(about());
+				System.out.println("==================================================================\n");
+				System.out.println("Enter 0 to start game.");
+				InputValidator.nextValidInt(scanInt, 0, 0);
+				break;
+		}
+
 
 		setup();
 
-		System.out.println(clearScreen + "Board:\n");
+
+		System.out.println(clearScreen() + "Board:\n");
 		System.out.println(board.toString(userColor));
 		while (!isCheckmate()){ // Runs game until a player wins
 		
@@ -641,13 +733,16 @@ public class Chess{
 						handlePawnPromotion(targXCoor, targYCoor);	
 					}
 					if (target == null) { // Print feedback information to user
-						System.out.println(clearScreen + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
+						System.out.println(clearScreen() + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
 					}
 					else {  // Print feedback information to user
-						System.out.println(clearScreen + "Successful kill: " + chosen + " (" + myXCoor + "," + myYCoor + ") takes " + target + " (" + targXCoor + "," + targYCoor + ").\n");
+						System.out.println(clearScreen() + "Successful kill: " + chosen + " (" + myXCoor + "," + myYCoor + ") takes " + target + " (" + targXCoor + "," + targYCoor + ").\n");
 					}
 					advanceRound();
 				}
+			}
+			else{
+				loopRound();
 			}
 
 		}
@@ -663,26 +758,34 @@ public class Chess{
 			}
 		}
 
-		// Demonstrate checkmate
 		board.set(4,7,new King("W"));
+		board.set(4,0,new King("B"));
+		board.set(0,0,new Rook("B"));
+		board.set(7,0,new Rook("B"));
 		board.set(7,7,new Rook("W"));
-		board.set(7,7,new Rook("W"));
-		board.set(1,0,new Rook("B"));
-		board.set(5,0,new Rook("B"));
-		board.set(7,1,new Pawn("B"));
-		board.set(0,1,new Pawn("B"));
-		board.set(7,6,new Pawn("W"));
-		board.set(6,6,new Pawn("W"));
-		board.set(5,6,new Pawn("W"));
-		board.set(1,6,new Pawn("W"));
-		board.set(0,5,new Pawn("W"));
-		board.set(5,5,new Knight("W"));
-		board.set(3,3,new Bishop("W"));
-		board.set(2,1,new Bishop("W"));
-		board.set(5,2,new King("B"));
-		board.set(6,3,new Queen("W"));
-		blackKingXCoor = 5;
-		blackKingYCoor = 2;
+		board.set(0,7,new Rook("W"));
+		board.set(3,5,new Queen("B"));
+		board.set(5,5,new Queen("B"));
+		// Demonstrate checkmate
+		//board.set(4,7,new King("W"));
+		//board.set(7,7,new Rook("W"));
+		//board.set(7,7,new Rook("W"));
+		//board.set(1,0,new Rook("B"));
+		//board.set(5,0,new Rook("B"));
+		//board.set(7,1,new Pawn("B"));
+		//board.set(0,1,new Pawn("B"));
+		//board.set(7,6,new Pawn("W"));
+		//board.set(6,6,new Pawn("W"));
+		//board.set(5,6,new Pawn("W"));
+		//board.set(1,6,new Pawn("W"));
+		//board.set(0,5,new Pawn("W"));
+		//board.set(5,5,new Knight("W"));
+		//board.set(3,3,new Bishop("W"));
+		//board.set(2,1,new Bishop("W"));
+		//board.set(5,2,new King("B"));
+		//board.set(6,3,new Queen("W"));
+		//blackKingXCoor = 5;
+		//blackKingYCoor = 2;
 
 		/* Demonstrate interception
 		board.set(4,7,new King("W"));

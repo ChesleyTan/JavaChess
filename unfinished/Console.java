@@ -4,15 +4,18 @@ import javax.swing.*;
 import java.io.*;
 import java.awt.*;
 
-public class Console extends JTextArea {
+public class Console {
 
     static JTextArea console = new JTextArea(500, 300);
     static JFrame frame = new JFrame("Console");
+    static JPanel panel = new JPanel(new BorderLayout());
+    static JScrollPane scrollPane = new JScrollPane(console);
     static Font consoleDefaultFont = new Font(Font.MONOSPACED, Font.BOLD, 14);
     static Font consoleCustomFont;
 
     public static void main(String[] args) {
         start();
+        System.out.println("Hello World!");
     }
 
     public static Font loadFont() {
@@ -32,12 +35,15 @@ public class Console extends JTextArea {
         frame.setSize(500, 300);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+        //panel.setLayout(new BorderLayout());
+        //panel.add(scrollPane, BorderLayout.CENTER);
         console.setFont(loadFont());
         frame.add(console);
         redirectSystemStreams();
     }
 
-    private static void updateConsole(final String text) {
+    public static void updateConsole(final String text) {
         SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
@@ -46,7 +52,7 @@ public class Console extends JTextArea {
         });
     }
 
-    private static void flushConsole() {
+    public static void flushConsole() {
         SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
@@ -55,7 +61,7 @@ public class Console extends JTextArea {
         });
     }
 
-    private static void redirectSystemStreams() {
+    public static void redirectSystemStreams() {
 
         OutputStream out = new OutputStream() {
 
