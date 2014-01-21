@@ -12,3 +12,13 @@ by <b>Chesley Tan and Christopher Kim</b><br>
 <pre><code>$ javac JavaChess/Chess.java
 $ java JavaChess.Chess
 </code></pre>
+<b>OR:</b><br>
+<ol>
+<li>Download the Chess.jar file</li>
+<li>Then <b>run</b>:<br></li>
+</ol>
+<pre><code>$ java -jar Chess.jar
+</code></pre>
+<hr>
+<h3> GUI? </h3>
+Unfortunately, we were unable to finish implementing GUI in time.  Our unfinished work can be found in the unfinished/ directory.
