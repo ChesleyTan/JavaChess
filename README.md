@@ -14,7 +14,7 @@ $ java JavaChess.Chess
 </code></pre>
 <b>OR:</b><br>
 <ol>
-<li>Download the Chess.jar file</li>
+<li>Move Chess.jar to the directory directly above JavaChess/</li>
 <li>Then <b>run</b>:<br></li>
 </ol>
 <pre><code>$ java -jar Chess.jar
