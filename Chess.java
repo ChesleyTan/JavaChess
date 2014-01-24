@@ -2,8 +2,10 @@ package JavaChess;
 import JavaChess.pieces.*;
 import java.util.Scanner;
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
+import java.net.URL;
 public class Chess{
 	private static Scanner scanInt = new Scanner(System.in);
 	private static Scanner scanStr = new Scanner(System.in);
@@ -21,13 +23,15 @@ public class Chess{
 	private static Board previousBoard = board;
 	private final static boolean debugMode = false;
 
+	private final static java.net.URL asciiFile = Chess.class.getResource("/JavaChess/resources/ascii.txt");
+
 	public static String clearScreen(){
 		String retStr = "";
 		if (debugMode){
 			retStr = "\n";
 		}
 		else{
-			retStr = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"; 	
+			retStr = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"; 	
 		}
 		return retStr;
 	}
@@ -644,7 +648,7 @@ public class Chess{
 
 
 			try{
-				BufferedReader asciiReader = new BufferedReader(new FileReader("JavaChess/resources/ascii.txt")); // Credits in ascii.txt 
+				BufferedReader asciiReader = new BufferedReader(new InputStreamReader(asciiFile.openStream())); // Credits in ascii.txt 
 				String nextLine = "";	
 				while (!(nextLine = asciiReader.readLine()).trim().equals("")){  // Read until a blank line is found
 					System.out.println(nextLine);
