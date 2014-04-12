@@ -21,7 +21,7 @@ public class Chess{
 	private static boolean kingPreviouslyChecked = false;
 	private static Board board = new Board();
 	private static Board previousBoard = board;
-	private final static boolean debugMode = false;
+	private final static boolean debugMode = true;
 
 	private final static java.net.URL asciiFile = Chess.class.getResource("/JavaChess/resources/ascii.txt");
 
@@ -566,6 +566,11 @@ public class Chess{
 	// Method to set up the game, prints to console
 	public static void setup(){
 		System.out.println(clearScreen());
+		if (debugMode) {
+		    player1 = "P1";
+		    player2 = "P2";
+		    return;
+		}
 		do{
 			System.out.print("Player 1 Name: ");
 			player1 = scanStr.nextLine();

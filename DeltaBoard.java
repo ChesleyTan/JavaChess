@@ -7,7 +7,7 @@ import java.util.ArrayList;
 // Stored int of 0 signifies a null that was changed into a ChessPiece
 // Stored ChessPiece signifies a ChessPiece that was changed into a ChessPiece
 public class DeltaBoard{
-	private static boolean debugMode = false;
+	private static boolean debugMode = true;
 	private static ArrayList<Object[][]> history = new ArrayList<Object[][]>();
 	// Method to create a copy of a board
 	public static Board cloneBoard(Board board){
@@ -15,11 +15,7 @@ public class DeltaBoard{
 		for (int i = 0;i < 8;i++){
 			for (int u = 0;u < 8;u++){
 				if (board.get(i, u) != null){
-					try{
-						retBoard.set(i, u, (ChessPiece)board.get(i, u).clone());
-					} catch (CloneNotSupportedException e){
-						System.err.println("CloneNotSupportedException when cloning Board in DeltaBoard: " + e.getMessage());
-					}
+					retBoard.set(i, u, board.get(i, u).copy());
 				}
 				else{
 					retBoard.set(i, u, null);
@@ -34,20 +30,17 @@ public class DeltaBoard{
 			for (int x = 0;x < 8;x++){
 				if (debugMode){
 					System.out.println("Prev: " + previousBoard.get(x, y) + " Now: " + currentBoard.get(x, y));
-					System.out.println("Same? " + (previousBoard.get(x, y) == currentBoard.get(x, y)));
+					System.out.println("Same? " + ((previousBoard.get(x, y) == null && currentBoard.get(x, y) == null) || (previousBoard.get(x, y) != null && currentBoard.get(x, y) != null && previousBoard.get(x, y).equals(currentBoard.get(x, y)))));
 				}
-				if (previousBoard.get(x, y) != currentBoard.get(x, y)){
-					if (previousBoard.get(x, y) == null){
-						deltaBoard[y][x] = 0;  // Store a 0 to signify a null
-					}
-					else{
-						try{
-							deltaBoard[y][x] = previousBoard.get(x, y).clone(); // Store the old ChessPiece
-						} catch (CloneNotSupportedException e){
-							System.err.println("CloneNotSupportedException when backing up Board in DeltaBoard: " + e.getMessage());
-						}
-					}
-				}
+				if (previousBoard.get(x, y) == null && currentBoard.get(x, y) != null) {
+                    deltaBoard[y][x] = 0;  // Store a 0 to signify a null
+                }
+                else if (previousBoard.get(x, y) != null && currentBoard.get(x, y) != null && !previousBoard.get(x, y).equals(currentBoard.get(x, y))){
+                    deltaBoard[y][x] = previousBoard.get(x, y).copy(); // Store the old ChessPiece
+                }
+                else if (previousBoard.get(x, y) != null && currentBoard.get(x, y) == null) {
+                    deltaBoard[y][x] = previousBoard.get(x, y).copy();
+                }
 				else{
 					deltaBoard[y][x] = 1; // Store a 1 to signify no change
 				}
