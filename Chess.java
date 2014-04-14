@@ -626,7 +626,10 @@ public class Chess{
 			"To attempt an En Passant: Select your pawn and select the opponent pawn as your target.\n\n" + 
 			"ChessWeasel also includes an undo feature :)\n\n";
 	}
-	public static void main(String[] args){
+	public Board getBoard() {
+	    return board;
+	}
+	public void run() {    	
 		//cheat();
 
 		if (!debugMode){
@@ -690,72 +693,150 @@ public class Chess{
 		System.out.println(clearScreen() + "Board:\n");
 		System.out.println(board.toString(userColor));
 		while (!isCheckmate()){ // Runs game until a player wins
-		
-			previousBoard = DeltaBoard.cloneBoard(board);
-			// Checks if user's king is in check before moving
-			if (isChecked(userColor, getXOfKing(userColor), getYOfKing(userColor), false)){ // Check whether the user's king is in check prior to user's turn
-				System.out.println("Your King is in check!");
-			} 
-			kingPreviouslyChecked = ((King)board.get(getXOfKing(userColor),getYOfKing(userColor))).isChecked(); // Keeps track of whether the user's king was checked before this turn
+		    playRound();
+        }
+        System.out.println("CHECKMATE, " + winner.toUpperCase() + " WINS!"); // Print out victory at termination of while loop
+	}
+	public void playRound() {
+        previousBoard = DeltaBoard.cloneBoard(board);
+        // Checks if user's king is in check before moving
+        if (isChecked(userColor, getXOfKing(userColor), getYOfKing(userColor), false)){ // Check whether the user's king is in check prior to user's turn
+            System.out.println("Your King is in check!");
+        } 
+        kingPreviouslyChecked = ((King)board.get(getXOfKing(userColor),getYOfKing(userColor))).isChecked(); // Keeps track of whether the user's king was checked before this turn
 
-			// getUserChoice() returns boolean signifying if iteration of the loop should be skipped
-			if (getUserChoice()){
-				continue;
-			}
-			
-			// handleCastle() returns boolean signifying if iteration of the loop should be skipped
-			if (handleCastle()){
-				continue;
-			}
+        // getUserChoice() returns boolean signifying if iteration of the loop should be skipped
+        if (getUserChoice()){
+            return;
+        }
 
-			// handleEnPassant() returns boolean signifying if iteration of the loop should be skipped
-			if (handleEnPassant()){
-				continue;
-			}
+        // handleCastle() returns boolean signifying if iteration of the loop should be skipped
+        if (handleCastle()){
+            return;
+        }
 
-			// handlePawnJump() returns boolean signifying if iteration of the loop should be skipped
-			if (handlePawnJump()){
-				continue;
-			}
+        // handleEnPassant() returns boolean signifying if iteration of the loop should be skipped
+        if (handleEnPassant()){
+            return;
+        }
+
+        // handlePawnJump() returns boolean signifying if iteration of the loop should be skipped
+        if (handlePawnJump()){
+            return;
+        }
 
 
-			// Regular Move: Checks if king is in check after move
-			if (validMove(myXCoor, myYCoor, targXCoor, targYCoor, userColor)) {
-				if (chosen.getType().equals("KING")){
-					updateKingCoor(chosen.getColor(), targXCoor, targYCoor); 
-				}/* need to update it first because if the chosen piece is a king, then
-				I wouldn't want to ask for check on the same exact coords, but I would want to ask for check on 
-				the new coords of the king*/
-				board.set(targXCoor,targYCoor,chosen); // Tentatively move the chosen piece to the target position
-				board.set(myXCoor, myYCoor, null); // Remove chosen piece from old position
+        // Regular Move: Checks if king is in check after move
+        if (validMove(myXCoor, myYCoor, targXCoor, targYCoor, userColor)) {
+            if (chosen.getType().equals("KING")){
+                updateKingCoor(chosen.getColor(), targXCoor, targYCoor); 
+            }/* need to update it first because if the chosen piece is a king, then
+            I wouldn't want to ask for check on the same exact coords, but I would want to ask for check on 
+            the new coords of the king*/
+            board.set(targXCoor,targYCoor,chosen); // Tentatively move the chosen piece to the target position
+            board.set(myXCoor, myYCoor, null); // Remove chosen piece from old position
 
-				if (kingCheckedAfterMove()) { // Check if the resulting position leads to a check on the user's king
-					board.set(myXCoor,myYCoor,board.set(targXCoor,targYCoor,target)); // Return pieces to original position by swapping 
-					if (chosen.getType().equals("KING")){
-						updateKingCoor(chosen.getColor(), myXCoor, myYCoor); 
-					}
-					loopRound();
-				}
+            if (kingCheckedAfterMove()) { // Check if the resulting position leads to a check on the user's king
+                board.set(myXCoor,myYCoor,board.set(targXCoor,targYCoor,target)); // Return pieces to original position by swapping 
+                if (chosen.getType().equals("KING")){
+                    updateKingCoor(chosen.getColor(), myXCoor, myYCoor); 
+                }
+                loopRound();
+            }
 
-				else { // Case when the resulting position does NOT result in a check on the user's king
-					if (chosen.getType().equals("PAWN")){
-						handlePawnPromotion(targXCoor, targYCoor);	
-					}
-					if (target == null) { // Print feedback information to user
-						System.out.println(clearScreen() + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
-					}
-					else {  // Print feedback information to user
-						System.out.println(clearScreen() + "Successful kill: " + chosen + " (" + myXCoor + "," + myYCoor + ") takes " + target + " (" + targXCoor + "," + targYCoor + ").\n");
-					}
-					advanceRound();
-				}
-			}
-			else{
-				loopRound();
-			}
+            else { // Case when the resulting position does NOT result in a check on the user's king
+                if (chosen.getType().equals("PAWN")){
+                    handlePawnPromotion(targXCoor, targYCoor);	
+                }
+                if (target == null) { // Print feedback information to user
+                    System.out.println(clearScreen() + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
+                }
+                else {  // Print feedback information to user
+                    System.out.println(clearScreen() + "Successful kill: " + chosen + " (" + myXCoor + "," + myYCoor + ") takes " + target + " (" + targXCoor + "," + targYCoor + ").\n");
+                }
+                advanceRound();
+            }
+        }
+        else{
+            loopRound();
+        }
+    }
 
-		}
-		System.out.println("CHECKMATE, " + winner.toUpperCase() + " WINS!"); // Print out victory at termination of while loop
+    public void gfxPlayRound(int myXCoor, int myYCoor, int targXCoor, int targYCoor) {
+        previousBoard = DeltaBoard.cloneBoard(board);
+        // Checks if user's king is in check before moving
+        if (isChecked(userColor, getXOfKing(userColor), getYOfKing(userColor), false)){ // Check whether the user's king is in check prior to user's turn
+            System.out.println("Your King is in check!");
+        } 
+        kingPreviouslyChecked = ((King)board.get(getXOfKing(userColor),getYOfKing(userColor))).isChecked(); // Keeps track of whether the user's king was checked before this turn
+
+        this.myXCoor = myXCoor;
+        this.myYCoor = myYCoor;
+        this.targXCoor = targXCoor;
+        this.targYCoor = targYCoor;
+        chosen = board.get(myXCoor, myYCoor);
+        target = board.get(targXCoor, targYCoor);
+
+        // handleCastle() returns boolean signifying if iteration of the loop should be skipped
+        if (handleCastle()){
+            return;
+        }
+
+        // handleEnPassant() returns boolean signifying if iteration of the loop should be skipped
+        if (handleEnPassant()){
+            return;
+        }
+
+        // handlePawnJump() returns boolean signifying if iteration of the loop should be skipped
+        if (handlePawnJump()){
+            return;
+        }
+
+
+        // Regular Move: Checks if king is in check after move
+        if (validMove(myXCoor, myYCoor, targXCoor, targYCoor, userColor)) {
+            if (chosen.getType().equals("KING")){
+                updateKingCoor(chosen.getColor(), targXCoor, targYCoor); 
+            }/* need to update it first because if the chosen piece is a king, then
+            I wouldn't want to ask for check on the same exact coords, but I would want to ask for check on 
+            the new coords of the king*/
+            board.set(targXCoor,targYCoor,chosen); // Tentatively move the chosen piece to the target position
+            board.set(myXCoor, myYCoor, null); // Remove chosen piece from old position
+
+            if (kingCheckedAfterMove()) { // Check if the resulting position leads to a check on the user's king
+                board.set(myXCoor,myYCoor,board.set(targXCoor,targYCoor,target)); // Return pieces to original position by swapping 
+                if (chosen.getType().equals("KING")){
+                    updateKingCoor(chosen.getColor(), myXCoor, myYCoor); 
+                }
+                loopRound();
+            }
+
+            else { // Case when the resulting position does NOT result in a check on the user's king
+                if (chosen.getType().equals("PAWN")){
+                    handlePawnPromotion(targXCoor, targYCoor);	
+                }
+                if (target == null) { // Print feedback information to user
+                    System.out.println(clearScreen() + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
+                }
+                else {  // Print feedback information to user
+                    System.out.println(clearScreen() + "Successful kill: " + chosen + " (" + myXCoor + "," + myYCoor + ") takes " + target + " (" + targXCoor + "," + targYCoor + ").\n");
+                }
+                advanceRound();
+            }
+        }
+        else{
+            loopRound();
+        }
+    
+    }
+
+    public String getUserColor() {
+        return userColor;
+    }
+
+	public static void main(String[] args){
+	    Chess chess = new Chess();
+	    chess.run();
 	}
 	// Method for setting up the board in a special arrangement
 	// IMPORTANT NOTE: When starting the king is a position that is not its standard position on the chessboard,

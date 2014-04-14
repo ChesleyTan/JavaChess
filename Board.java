@@ -101,5 +101,9 @@ public class Board {
 		}
 		return foo.substring(0,foo.length()-1); // Remove extra newline
 	}
+	
+	public ChessPiece[][] getBoard() {
+	    return _board;
+	}
 }
 
