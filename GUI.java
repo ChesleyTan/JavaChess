@@ -11,6 +11,8 @@ public class GUI {
     static JButton[][] buttons = new JButton[8][8];
     static Semaphore semaphore = new Semaphore(0);
     static Chess chess = new Chess();
+    static Board chessBoard = chess.getBoard();
+    static ChessPiece[][] board = chess.getBoard().getBoard();
     static boolean firstChoice = false, secondChoice = false;
     static int myXCoor = 0, myYCoor = 0, targXCoor = 0, targYCoor = 0;
     public static void init() {
@@ -35,7 +37,6 @@ public class GUI {
     }
     public static void update(String userColor) {
         JButton button = null;
-        ChessPiece[][] board = chess.getBoard().getBoard();
 
         int iStart = 0;
         int iEnd = 8;
@@ -125,12 +126,28 @@ public class GUI {
         while (!chess.isCheckmate()) {
             try {
             semaphore.acquire();
+            ChessPiece chosen = chessBoard.get(myXCoor, myYCoor);
+            buttons[myYCoor][myXCoor].setBackground(Color.green);
+            System.out.println(chessBoard.toString());
+            for (int i = 0;i < 8;i++) {
+                for (int u = 0;u < 8;u++) {
+                    if (chess.validMove(myXCoor, myYCoor, i, u, chess.getUserColor(), false)) {
+                        if (chessBoard.get(i, u) == null) {
+                            buttons[u][i].setBackground(Color.yellow);    
+                        }
+                        else {
+                            buttons[u][i].setBackground(Color.red);    
+                        }
+                    }
+                }    
+            }
             semaphore.acquire();
             } catch (InterruptedException e) {
                 System.err.println(e.getMessage());
             }
             firstChoice = false;
             secondChoice = false;
+            System.out.println(chessBoard.toString());
             chess.gfxPlayRound(myXCoor, myYCoor, targXCoor, targYCoor);
             panel.removeAll();
             update(chess.getUserColor());
@@ -151,7 +168,7 @@ public class GUI {
                 for (int x = 0; x < 8; x++) {
                     if (buttons[y][x] == ae.getSource()) {
                         if (!firstChoice) {
-                            if (chess.getBoard().get(x, y) == null || !chess.getUserColor().equals(chess.getBoard().get(x, y).getColor())) {
+                            if (chessBoard.get(x, y) == null || !chess.getUserColor().equals(chessBoard.get(x, y).getColor())) {
                                 return;
                             }
                             myXCoor = x;

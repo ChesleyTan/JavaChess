@@ -17,7 +17,7 @@ public class Queen extends ChessPiece{
 				}
 				return true;
 			}
-			else if (myXCoor > targYCoor){
+			else if (myXCoor > targXCoor){
 				for (int i = myXCoor -1;i>targXCoor;i--){
 					if (!board.isEmpty(i,myYCoor))
 						return false;

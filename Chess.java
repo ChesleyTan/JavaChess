@@ -156,10 +156,10 @@ public class Chess{
 	}
 	// Method to check if a king is checked and set the isChecked boolean of the piece appropriately
 	// Also allows for virtualization of the move by not setting the king's local variables isChecked and checkedBy[] 
-	public static boolean isChecked(String color, int kingXCoor, int kingYCoor, boolean virtualizeMove) {
+	public static boolean isChecked(String color, int kingXCoor, int kingYCoor, boolean commitToMove) {
 		boolean isChecked = false;
 		// Remove old entries in checkedBy array of the king
-		if (board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING") && !virtualizeMove){
+		if (board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING") && commitToMove){
 			((King)board.get(kingXCoor,kingYCoor)).clearCheckedBy();
 		}
 		for (int x = 0; x < 8; x++) {
@@ -167,7 +167,7 @@ public class Chess{
 				ChessPiece piece = board.get(x,y);
 				if (piece != null && !piece.getColor().equals(color)) {
 					if (piece.validAttack(x, y,kingXCoor,kingYCoor, board)) {
-						if (board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING") && !virtualizeMove){  // Allows for virtualization of move: if the supplied args for king's coordinates are not the true coords, this prevents an error
+						if (board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING") && commitToMove){  // Allows for virtualization of move: if the supplied args for king's coordinates are not the true coords, this prevents an error
 							((King)board.get(kingXCoor,kingYCoor)).setIsChecked(true);
 							((King)board.get(kingXCoor,kingYCoor)).addCheckedBy(new int[] {x,y});
 						}
@@ -176,7 +176,7 @@ public class Chess{
 				}
 			}
 		}
-		if (isChecked == false && board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING") && !virtualizeMove){
+		if (isChecked == false && board.get(kingXCoor,kingYCoor) != null && board.get(kingXCoor,kingYCoor).getType().equals("KING") && commitToMove){
 			((King)board.get(kingXCoor,kingYCoor)).setIsChecked(false);
 			((King)board.get(kingXCoor,kingYCoor)).clearCheckedBy();
 		}
@@ -204,7 +204,7 @@ public class Chess{
 							board.set(newXCoor, newYCoor, king);
 							board.set(kingXCoor, kingYCoor, null);
 							updateKingCoor(userColor, newXCoor, newYCoor);
-							if (!isChecked(color, newXCoor, newYCoor, true)) { // If there exists a position where the king is not in check, then return true
+							if (!isChecked(color, newXCoor, newYCoor, false)) { // If there exists a position where the king is not in check, then return true
 								if (debugMode){
 									System.out.println("KING NOT IN CHECK HERE");
 								}
@@ -218,7 +218,7 @@ public class Chess{
 							board.set(newXCoor, newYCoor, king);
 							board.set(kingXCoor, kingYCoor, null);
 							updateKingCoor(userColor, newXCoor, newYCoor);
-							if (!isChecked(color, newXCoor, newYCoor, true)) { // If there exists a position where the king is not in check, then return true
+							if (!isChecked(color, newXCoor, newYCoor, false)) { // If there exists a position where the king is not in check, then return true
 								if (debugMode){
 									System.out.println("KING NOT IN CHECK HERE");
 								}
@@ -304,7 +304,9 @@ public class Chess{
 				}
 			}
 			else{
-				System.out.println("CHECKING PIECE NOT INTERCEPTABLE" + checkingPieceType);
+			    if (debugMode) {
+				    System.out.println("CHECKING PIECE NOT INTERCEPTABLE: " + checkingPieceType);
+                }
 			}
 		}
 		else if (numPiecesCheckedBy >= 2){  // If checked by 2 or more pieces simulataneusly, then the intersection of the lines occur at the king, so no interception can be made
@@ -317,7 +319,7 @@ public class Chess{
 		int kingXCoor, kingYCoor;
 		kingXCoor = getXOfKing(userColor);
 		kingYCoor = getYOfKing(userColor);
-		if (isChecked(userColor, kingXCoor, kingYCoor, false)){
+		if (isChecked(userColor, kingXCoor, kingYCoor, true)){
 			if (!canMove(userColor, kingXCoor, kingYCoor)){
 				if (debugMode){
 					System.out.println("KING CANNOT MOVE");
@@ -394,27 +396,56 @@ public class Chess{
 			}
 		}
 	}
-	public static boolean validMove(int myXCoor, int myYCoor, int targXCoor, int targYCoor, String myColor){
-		ChessPiece myPiece = board.get(myXCoor,myYCoor);
-		ChessPiece targPiece = board.get(targXCoor,targYCoor);
-		if (targPiece != null && myPiece.getColor().equals(targPiece.getColor())){
+	public static boolean validMove(int myXCoor, int myYCoor, int targXCoor, int targYCoor, String myColor, boolean commitToMove){ // commitToMove decides if the move should be played if it is valid or if we are just testing for valid moves and the move should not be played
+        chosen = board.get(myXCoor,myYCoor);
+		if (chosen == null) {
+		    return false;
+		}
+		target = board.get(targXCoor, targYCoor);
+		if (target != null && chosen.getColor().equals(target.getColor())){
 			System.out.println(clearScreen() + "Invalid move: Attacking own piece.\n");
 			return false;
 		}
-		if (targPiece == null){
-			if (myPiece.validMovement(myXCoor,myYCoor,targXCoor,targYCoor,board)){
-				return true;
+		if (target == null){
+			if (chosen.validMovement(myXCoor,myYCoor,targXCoor,targYCoor,board)){
+				// continue to check if king is checked after move
 			}
 			else{
 				System.out.println(clearScreen() + "Invalid move: " + "(" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
 				return false;
 			}
 		}
-		else if (myPiece.validAttack(myXCoor,myYCoor,targXCoor,targYCoor,board)){
-			return true;
+		else if (chosen.validAttack(myXCoor,myYCoor,targXCoor,targYCoor,board)){
+			// continue to check if king is checked after move
 		}
-		System.out.println(clearScreen() + "Invalid move: " + "(" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
-		return false;
+        else {
+            System.out.println(clearScreen() + "Invalid move: " + "(" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
+            return false;
+        }
+
+        if (chosen.getType().equals("KING")){
+            updateKingCoor(chosen.getColor(), targXCoor, targYCoor); 
+        }/* need to update it first because if the chosen piece is a king, then
+        I wouldn't want to ask for check on the same exact coords, but I would want to ask for check on 
+        the new coords of the king*/
+        board.set(targXCoor,targYCoor,chosen); // Tentatively move the chosen piece to the target position
+        board.set(myXCoor, myYCoor, null); // Remove chosen piece from old position
+
+        boolean retBool;
+        if (kingCheckedAfterMove()) { // Check if the resulting position leads to a check on the user's king
+            retBool = false;
+        }
+        else {
+            if (commitToMove) {
+                return true; // Don't revert the move
+            }
+            retBool = true;
+        }
+        board.set(myXCoor,myYCoor,board.set(targXCoor,targYCoor,target)); // Return pieces to original position by swapping 
+        if (chosen.getType().equals("KING")){
+            updateKingCoor(chosen.getColor(), myXCoor, myYCoor); 
+        }
+        return retBool;
 	}
 	public static void toggleUserColor(){
 		if (userColor.equals("W"))
@@ -438,7 +469,7 @@ public class Chess{
 					if (!chosen.hasMoved() && !target.hasMoved()){
 						if (validCastle(myXCoor,myYCoor,targXCoor,targYCoor)){
 							if (myXCoor == 4 && targXCoor == 7){
-								if (isChecked(userColor, 5, myYCoor, true) || isChecked(userColor, 6, myYCoor, true)){
+								if (isChecked(userColor, 5, myYCoor, false) || isChecked(userColor, 6, myYCoor, false)){
 									System.out.println(clearScreen() + "Invalid Castle: King passes through square attacked by enemy piece");
 									loopRound();
 									shouldCallContinue = true;
@@ -455,7 +486,7 @@ public class Chess{
 								return shouldCallContinue;
 							}
 							else if (myXCoor == 4 && targXCoor == 0){
-								if (isChecked(userColor, 3, myYCoor, true) || isChecked(userColor, 2, myYCoor, true)){
+								if (isChecked(userColor, 3, myYCoor, false) || isChecked(userColor, 2, myYCoor, false)){
 									System.out.println(clearScreen() + "Invalid Castle: King passes through square attacked by enemy piece");
 									loopRound();
 									shouldCallContinue = true;
@@ -700,7 +731,7 @@ public class Chess{
 	public void playRound() {
         previousBoard = DeltaBoard.cloneBoard(board);
         // Checks if user's king is in check before moving
-        if (isChecked(userColor, getXOfKing(userColor), getYOfKing(userColor), false)){ // Check whether the user's king is in check prior to user's turn
+        if (isChecked(userColor, getXOfKing(userColor), getYOfKing(userColor), true)){ // Check whether the user's king is in check prior to user's turn
             System.out.println("Your King is in check!");
         } 
         kingPreviouslyChecked = ((King)board.get(getXOfKing(userColor),getYOfKing(userColor))).isChecked(); // Keeps track of whether the user's king was checked before this turn
@@ -727,35 +758,18 @@ public class Chess{
 
 
         // Regular Move: Checks if king is in check after move
-        if (validMove(myXCoor, myYCoor, targXCoor, targYCoor, userColor)) {
-            if (chosen.getType().equals("KING")){
-                updateKingCoor(chosen.getColor(), targXCoor, targYCoor); 
-            }/* need to update it first because if the chosen piece is a king, then
-            I wouldn't want to ask for check on the same exact coords, but I would want to ask for check on 
-            the new coords of the king*/
-            board.set(targXCoor,targYCoor,chosen); // Tentatively move the chosen piece to the target position
-            board.set(myXCoor, myYCoor, null); // Remove chosen piece from old position
-
-            if (kingCheckedAfterMove()) { // Check if the resulting position leads to a check on the user's king
-                board.set(myXCoor,myYCoor,board.set(targXCoor,targYCoor,target)); // Return pieces to original position by swapping 
-                if (chosen.getType().equals("KING")){
-                    updateKingCoor(chosen.getColor(), myXCoor, myYCoor); 
-                }
-                loopRound();
+        if (validMove(myXCoor, myYCoor, targXCoor, targYCoor, userColor, true)) {
+            // Case when the resulting position does NOT result in a check on the user's king
+            if (chosen.getType().equals("PAWN")){
+                handlePawnPromotion(targXCoor, targYCoor);	
             }
-
-            else { // Case when the resulting position does NOT result in a check on the user's king
-                if (chosen.getType().equals("PAWN")){
-                    handlePawnPromotion(targXCoor, targYCoor);	
-                }
-                if (target == null) { // Print feedback information to user
-                    System.out.println(clearScreen() + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
-                }
-                else {  // Print feedback information to user
-                    System.out.println(clearScreen() + "Successful kill: " + chosen + " (" + myXCoor + "," + myYCoor + ") takes " + target + " (" + targXCoor + "," + targYCoor + ").\n");
-                }
-                advanceRound();
+            if (target == null) { // Print feedback information to user
+                System.out.println(clearScreen() + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
             }
+            else {  // Print feedback information to user
+                System.out.println(clearScreen() + "Successful kill: " + chosen + " (" + myXCoor + "," + myYCoor + ") takes " + target + " (" + targXCoor + "," + targYCoor + ").\n");
+            }
+            advanceRound();
         }
         else{
             loopRound();
@@ -765,7 +779,7 @@ public class Chess{
     public void gfxPlayRound(int myXCoor, int myYCoor, int targXCoor, int targYCoor) {
         previousBoard = DeltaBoard.cloneBoard(board);
         // Checks if user's king is in check before moving
-        if (isChecked(userColor, getXOfKing(userColor), getYOfKing(userColor), false)){ // Check whether the user's king is in check prior to user's turn
+        if (isChecked(userColor, getXOfKing(userColor), getYOfKing(userColor), true)){ // Check whether the user's king is in check prior to user's turn
             System.out.println("Your King is in check!");
         } 
         kingPreviouslyChecked = ((King)board.get(getXOfKing(userColor),getYOfKing(userColor))).isChecked(); // Keeps track of whether the user's king was checked before this turn
@@ -794,40 +808,22 @@ public class Chess{
 
 
         // Regular Move: Checks if king is in check after move
-        if (validMove(myXCoor, myYCoor, targXCoor, targYCoor, userColor)) {
-            if (chosen.getType().equals("KING")){
-                updateKingCoor(chosen.getColor(), targXCoor, targYCoor); 
-            }/* need to update it first because if the chosen piece is a king, then
-            I wouldn't want to ask for check on the same exact coords, but I would want to ask for check on 
-            the new coords of the king*/
-            board.set(targXCoor,targYCoor,chosen); // Tentatively move the chosen piece to the target position
-            board.set(myXCoor, myYCoor, null); // Remove chosen piece from old position
-
-            if (kingCheckedAfterMove()) { // Check if the resulting position leads to a check on the user's king
-                board.set(myXCoor,myYCoor,board.set(targXCoor,targYCoor,target)); // Return pieces to original position by swapping 
-                if (chosen.getType().equals("KING")){
-                    updateKingCoor(chosen.getColor(), myXCoor, myYCoor); 
-                }
-                loopRound();
+        if (validMove(myXCoor, myYCoor, targXCoor, targYCoor, userColor, true)) {
+            // Case when the resulting position does NOT result in a check on the user's king
+            if (chosen.getType().equals("PAWN")){
+                handlePawnPromotion(targXCoor, targYCoor);	
             }
-
-            else { // Case when the resulting position does NOT result in a check on the user's king
-                if (chosen.getType().equals("PAWN")){
-                    handlePawnPromotion(targXCoor, targYCoor);	
-                }
-                if (target == null) { // Print feedback information to user
-                    System.out.println(clearScreen() + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
-                }
-                else {  // Print feedback information to user
-                    System.out.println(clearScreen() + "Successful kill: " + chosen + " (" + myXCoor + "," + myYCoor + ") takes " + target + " (" + targXCoor + "," + targYCoor + ").\n");
-                }
-                advanceRound();
+            if (target == null) { // Print feedback information to user
+                System.out.println(clearScreen() + "Successful move: " + chosen + " (" + myXCoor + "," + myYCoor + ") to (" + targXCoor + "," + targYCoor + ").\n");
             }
+            else {  // Print feedback information to user
+                System.out.println(clearScreen() + "Successful kill: " + chosen + " (" + myXCoor + "," + myYCoor + ") takes " + target + " (" + targXCoor + "," + targYCoor + ").\n");
+            }
+            advanceRound();
         }
         else{
             loopRound();
         }
-    
     }
 
     public String getUserColor() {
