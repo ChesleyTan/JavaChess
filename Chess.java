@@ -21,7 +21,7 @@ public class Chess{
 	private static boolean kingPreviouslyChecked = false;
 	private static Board board = new Board();
 	private static Board previousBoard = board;
-	private final static boolean debugMode = true;
+	private final static boolean debugMode = false;
 
 	private final static java.net.URL asciiFile = Chess.class.getResource("/JavaChess/resources/ascii.txt");
 

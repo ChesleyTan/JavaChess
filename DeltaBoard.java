@@ -7,7 +7,7 @@ import java.util.ArrayList;
 // Stored int of 0 signifies a null that was changed into a ChessPiece
 // Stored ChessPiece signifies a ChessPiece that was changed into a ChessPiece
 public class DeltaBoard{
-	private static boolean debugMode = true;
+	private static boolean debugMode = false;
 	private static ArrayList<Object[][]> history = new ArrayList<Object[][]>();
 	// Method to create a copy of a board
 	public static Board cloneBoard(Board board){

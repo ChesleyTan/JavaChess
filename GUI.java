@@ -59,76 +59,61 @@ public class GUI {
                     if (c.getType().equals("PAWN")) {
                         if (c.getColor().equals("W")) {
                             button = new JButton(wPawn);
-                            button.setBackground(Color.gray);
                         }
                         else {
                             button = new JButton(bPawn);
-                            button.setBackground(Color.gray);
                         }
                     }
                     else if (c.getType().equals("ROOK")) {
                         if (c.getColor().equals("W")) {
                             button = new JButton(wRook);
-                            button.setBackground(Color.gray);
                         }
                         else {
                             button = new JButton(bRook);
-                            button.setBackground(Color.gray);
                         }
                     }
                     else if (c.getType().equals("KNIGHT")) {
                         if (c.getColor().equals("W")) {
                             button = new JButton(wKnight);
-                            button.setBackground(Color.gray);
                         }
                         else {
                             button = new JButton(bKnight);
-                            button.setBackground(Color.gray);
                         }
                     }
                     else if (c.getType().equals("BISHOP")) {
                         if (c.getColor().equals("W")) {
                             button = new JButton(wBishop);
-                            button.setBackground(Color.gray);
                         }
                         else {
                             button = new JButton(bBishop);
-                            button.setBackground(Color.gray);
                         }
                     }
                     else if (c.getType().equals("QUEEN")) {
                         if (c.getColor().equals("W")) {
                             button = new JButton(wQueen);
-                            button.setBackground(Color.gray);
                         }
                         else {
                             button = new JButton(bQueen);
-                            button.setBackground(Color.gray);
                         }
                     }
                     else if (c.getType().equals("KING")) {
                         if (c.getColor().equals("W")) {
                             button = new JButton(wKing);
-                            button.setBackground(Color.gray);
                         }
                         else {
                             button = new JButton(bKing);
-                            button.setBackground(Color.gray);
                         }
                     }
                     else {
                         button = new JButton();
-                        button.setBackground(Color.gray);
                     }
-                    button.addActionListener(new ClickAction());
-                    panel.add(button);
                 }
                 else {
                     button = new JButton();
-                    button.setBackground(Color.gray);
-                    button.addActionListener(new ClickAction());
-                    panel.add(button);
                 }
+                button.addActionListener(new ClickAction());
+                panel.add(button);
+                button.setBackground((i % 2 == u % 2) ? Color.gray : Color.black);
                 buttons[i][u] = button;
             }
         }
@@ -151,10 +136,17 @@ public class GUI {
             update(chess.getUserColor());
             panel.updateUI();
         }
+        String congrats = "Game Over! -- " + (chess.getUserColor().equals("W") ? "Black" : "White") + " wins!";
+        System.out.println(congrats);
+        frame.setTitle(congrats);
+        for (JButton[] ba : buttons) {
+            for (JButton b : ba) {
+                b.setBackground(Color.red);
+            }
+        }
     }
     static class ClickAction implements ActionListener {
         public void actionPerformed(ActionEvent ae) {
-            JButton bx = (JButton) ae.getSource();
             for (int y = 0; y < 8; y++) {
                 for (int x = 0; x < 8; x++) {
                     if (buttons[y][x] == ae.getSource()) {
