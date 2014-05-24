@@ -22,18 +22,18 @@ public class GUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         panel = new JPanel(new GridLayout(8,8));
         frame.add(panel);
-        wPawn = new ImageIcon((new ImageIcon("images/Wpawn.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
-        bPawn = new ImageIcon((new ImageIcon("images/Bpawn.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
-        wRook = new ImageIcon((new ImageIcon("images/Wrook.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
-        bRook = new ImageIcon((new ImageIcon("images/Brook.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
-        wKnight = new ImageIcon((new ImageIcon("images/Wknight.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
-        bKnight = new ImageIcon((new ImageIcon("images/Bknight.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
-        wBishop = new ImageIcon((new ImageIcon("images/Wbishop.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
-        bBishop = new ImageIcon((new ImageIcon("images/Bbishop.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
-        wQueen = new ImageIcon((new ImageIcon("images/Wqueen.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
-        bQueen = new ImageIcon((new ImageIcon("images/Bqueen.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
-        wKing = new ImageIcon((new ImageIcon("images/Wking.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
-        bKing = new ImageIcon((new ImageIcon("images/Bking.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
+        wPawn = new ImageIcon((new ImageIcon("JavaChess/images/Wpawn.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
+        bPawn = new ImageIcon((new ImageIcon("JavaChess/images/Bpawn.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
+        wRook = new ImageIcon((new ImageIcon("JavaChess/images/Wrook.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
+        bRook = new ImageIcon((new ImageIcon("JavaChess/images/Brook.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
+        wKnight = new ImageIcon((new ImageIcon("JavaChess/images/Wknight.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
+        bKnight = new ImageIcon((new ImageIcon("JavaChess/images/Bknight.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
+        wBishop = new ImageIcon((new ImageIcon("JavaChess/images/Wbishop.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
+        bBishop = new ImageIcon((new ImageIcon("JavaChess/images/Bbishop.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
+        wQueen = new ImageIcon((new ImageIcon("JavaChess/images/Wqueen.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
+        bQueen = new ImageIcon((new ImageIcon("JavaChess/images/Bqueen.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
+        wKing = new ImageIcon((new ImageIcon("JavaChess/images/Wking.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
+        bKing = new ImageIcon((new ImageIcon("JavaChess/images/Bking.jpeg")).getImage().getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH));
     }
     public static void update(String userColor) {
         JButton button = null;
